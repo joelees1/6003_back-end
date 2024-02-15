@@ -4,13 +4,15 @@ const bcrypt = require('bcrypt');
 const model = require('../models/users');
 const auth = require('../controllers/auth');
 const {validateUser} = require('../controllers/validation');
+const {validateUserUpdate} = require('../controllers/validation');
+const jwt = require('jsonwebtoken');
 
 const router = Router({prefix: '/api/v1/users'});
 
 router.get('/', auth, getAll);
 router.post('/', bodyParser(), auth, validateUser, createUser);
 router.get('/:id([0-9]{1,})', auth, getById);
-router.put('/:id([0-9]{1,})', auth, bodyParser(), validateUser, updateUser);
+router.put('/:id([0-9]{1,})', auth, bodyParser(), validateUserUpdate, updateUser);
 router.del('/:id([0-9]{1,})', auth, deleteUser);
 
 // get all users
@@ -78,7 +80,7 @@ async function createUser(ctx) {
     }
 }
 
-// update an existing user
+// update an existing user with the supplied fields
 async function updateUser(ctx) {
     try {
         let user = ctx.state.user; // current user
@@ -93,9 +95,12 @@ async function updateUser(ctx) {
 
         const body = ctx.request.body;
 
-        // hash the password
-        const hashedPassword = await bcrypt.hash(body.password, 10); // 10 is the salt rounds
-        body.password = hashedPassword;
+        // hash the password if it is updated
+        if (body.password) {  
+            // hash the password
+            const hashedPassword = await bcrypt.hash(body.password, 10); // 10 is the salt rounds
+            body.password = hashedPassword;
+        }
 
         // update the user
         let [result] = await model.update(id, body);

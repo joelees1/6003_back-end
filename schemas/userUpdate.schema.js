@@ -1,8 +1,8 @@
 module.exports = {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "id": "/user",
-    "title": "User",
-    "description": "An user on the platform",
+    "id": "/user/[id]",
+    "title": "User Update",
+    "description": "An user updating their profile",
     "type": "object",
     "properties": {
         "username": {
@@ -30,7 +30,6 @@ module.exports = {
         "phone_number": {
             "description": "Phone number of the user",
             "type": "string",
-        },
-    },
-    "required": ["username", "first_name", "last_name", "email", "password"],
+        }
+    }
 }

@@ -1,10 +1,9 @@
 const { Validator, ValidationError } = require('jsonschema');
-//const articleSchema = require('../schemas/article.schema.js');
 const userSchema = require('../schemas/user.schema.js');
+const userUpdateSchema = require('../schemas/userUpdate.schema.js');
 const v = new Validator();
 
-/*
-exports.validateArticle = async (ctx, next) => {
+exports.validateUser = async (ctx, next) => {
     const validationOptions = {
         throwError: true,
         allowUnknownAttributes: false
@@ -13,7 +12,7 @@ exports.validateArticle = async (ctx, next) => {
     const body = ctx.request.body;
 
     try {
-        v.validate(body, articleSchema, validationOptions);
+        v.validate(body, userSchema, validationOptions); // Validate against user schema
         await next();
     } catch (error) {
         if (error instanceof ValidationError) {
@@ -29,18 +28,18 @@ exports.validateArticle = async (ctx, next) => {
         }
     }
 }
-*/
 
-exports.validateUser = async (ctx, next) => {
+exports.validateUserUpdate = async (ctx, next) => {
     const validationOptions = {
         throwError: true,
         allowUnknownAttributes: false
     };
 
     const body = ctx.request.body;
+    console.log(body);
 
     try {
-        v.validate(body, userSchema, validationOptions); // Validate against user schema
+        v.validate(body, userUpdateSchema, validationOptions); // Validate against user update schema
         await next();
     } catch (error) {
         if (error instanceof ValidationError) {
