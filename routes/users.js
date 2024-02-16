@@ -3,9 +3,10 @@ const bodyParser = require('koa-bodyparser');
 const bcrypt = require('bcrypt');
 const model = require('../models/users');
 const auth = require('../controllers/auth');
+
+// Import validation functions
 const {validateUser} = require('../controllers/validation');
 const {validateUserUpdate} = require('../controllers/validation');
-const jwt = require('jsonwebtoken');
 
 const router = Router({prefix: '/api/v1/users'});
 
@@ -104,9 +105,12 @@ async function updateUser(ctx) {
 
         // update the user
         let [result] = await model.update(id, body);
-        if (result) { // If the user is updated successfully
+        if (result.affectedRows) { // If the user is updated successfully
             ctx.status = 200;
             ctx.body = {ID: id}
+        } else {
+            ctx.status = 404;
+            ctx.body = { error: 'User not found' };
         }
     } catch (error) {
         console.error(error);
@@ -122,15 +126,15 @@ async function deleteUser(ctx) {
         const id = parseInt(ctx.params.id);
 
         // Check if the user is the owner of the user
-        if (user.ID !== id) {
+        if (user.id !== id) {
             ctx.status = 403; // Forbidden
             ctx.body = { error: 'You are not allowed to delete this user' };
             return;
         }
 
         // delete the user
-        let result = await model.delete(id);
-        if (result[0].affectedRows > 0) {
+        let [result] = await model.delete(id);
+        if (result.affectedRows) {
             ctx.status = 204; // 204 No Content
         } else {
             ctx.status = 404;

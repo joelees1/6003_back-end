@@ -7,15 +7,19 @@ module.exports = {
     "properties": {
         "username": {
             "description": "Username of the user",
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 18 // max length for db
         },
         "first_name": {
             "description": "First name of the user",
-            "type": "string"
+            "type": "string",
+            "minLength": 1
         },
         "last_name": {
             "description": "Last name of the user",
-            "type": "string"
+            "type": "string",
+            "minLength": 1
         },
         "email": {
             "description": "Email of the user",
@@ -29,7 +33,7 @@ module.exports = {
         },
         "phone_number": {
             "description": "Phone number of the user",
-            "type": "string",
+            "type": "string"
         }
     }
 }

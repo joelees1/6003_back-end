@@ -1,0 +1,30 @@
+module.exports = {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "/address",
+    "title": "Address",
+    "description": "A user's address",
+    "type": "object",
+    "properties": {
+        "address_line1": {
+            "type": "string",
+            "minLength": 3
+        },
+        "address_line2": {
+            "type": "string",
+            "minLength": 3
+        },
+        "city": {
+            "type": "string",
+            "minLength": 2
+        },
+        "postcode": {
+            "type": "string",
+            "minLength": 1
+        },
+        "country": {
+            "type": "string",
+            "minLength": 1
+        }
+    },
+    "required": ["address_line1", "city", "postcode", "country"]
+}
