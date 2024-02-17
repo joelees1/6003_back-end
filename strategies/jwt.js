@@ -8,14 +8,9 @@ const jwtOptions = {
     secretOrKey: config.jwtSecret
   };
 
-// user goes to /login to get a token sent back in the response if the username and password are correct
-// token is added to the header of the request
-// passport middleware checks the token in the header of the request
-// if the token is valid, the user is authenticated
-
+// called from auth to check jwt
 const checkJwt = async (jwtPayload, done) => {
     try {
-        console.log(jwtPayload)
         const [user] = await users.findByUsername(jwtPayload.username);
         const result = user[0]; // get the first row from the results
 

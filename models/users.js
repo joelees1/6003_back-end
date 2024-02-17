@@ -1,6 +1,7 @@
 const db = require('../helpers/database');
 
-//get a single user by the (unique) username
+// get a single user by the (unique) username
+// used by login
 exports.findByUsername = async function getByUsername (username) {
     const query = "SELECT * FROM users WHERE username = ?";
     const value = [username];
@@ -8,10 +9,10 @@ exports.findByUsername = async function getByUsername (username) {
     return user;
   }  
 
-//list all users
+// get all users
 exports.getAll = async function getAllUsers (page, limit, order) {
     // get all rows from the users table, without password
-    let query = "SELECT id, username, first_name, last_name, email, phone_number, created_at, updated_at FROM users";
+    let query = "SELECT * FROM users";
     let values = [];
 
     if (order) {
@@ -26,23 +27,23 @@ exports.getAll = async function getAllUsers (page, limit, order) {
     return data;
 }
 
-//get a single user by its id  
+// get a single user by its id  
 exports.getById = async function getById (id) {
-    // get all rows from the users table, without password
-    let query = "SELECT id, username, first_name, last_name, email, phone_number, created_at, updated_at FROM users WHERE ID = ?";
+    // get all rows from the users table, filtered by role in routes
+    let query = "SELECT * FROM users WHERE ID = ?";
     let values = [id];
     let data = await db.run_query(query, values);
     return data;
 }
 
-//create a new user
+// create a new user
 exports.add = async function addUser (user) {
     let query = "INSERT INTO users SET ?";
     let data = await db.run_query(query, user);
     return data;
 }
 
-//update an existing user
+// update an existing user
 exports.update = async function updateUser (id, user) {
     let query = "UPDATE users SET ? WHERE ID = ?";
     let values = [user, id];
@@ -50,7 +51,7 @@ exports.update = async function updateUser (id, user) {
     return data;
 }
 
-//delete user
+// delete user
 exports.delete = async function deleteUser (id) {
     let query = "DELETE FROM users WHERE ID = ?";
     let values = [id];

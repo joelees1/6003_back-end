@@ -5,6 +5,11 @@ module.exports = {
     "description": "An user updating their profile",
     "type": "object",
     "properties": {
+        "role": {
+            "description": "Role of the user",
+            "type": "string",
+            "enum": ["user", "admin"]
+        },
         "username": {
             "description": "Username of the user",
             "type": "string",
@@ -35,5 +40,6 @@ module.exports = {
             "description": "Phone number of the user",
             "type": "string"
         }
-    }
+    },
+    "additionalProperties": false
 }

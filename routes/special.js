@@ -31,7 +31,6 @@ const verifyPassword = async function (result, password) {
 // Login route handler
 async function login(ctx) {
   const details = ctx.request.body;
-  console.log('details:', details);
 
   try {
     // Find user by username
@@ -46,7 +45,7 @@ async function login(ctx) {
     }
 
     // Generate JWT token
-    const token = jwt.sign(result, config.jwtSecret, { expiresIn: 2400 }); // 40 minutes expiration
+    const token = jwt.sign(result, config.jwtSecret, { expiresIn: '100d' }); // 40 minutes expiration
     ctx.body = { token }; // Send token in response
     ctx.status = 200; // OK
     
@@ -56,7 +55,5 @@ async function login(ctx) {
     ctx.body = { error: 'Internal server error' };
   }
 }
-
-// add logout handler
 
 module.exports = router;

@@ -26,5 +26,6 @@ module.exports = {
             "minLength": 1
         }
     },
-    "required": ["address_line1", "city", "postcode", "country"]
+    "required": ["address_line1", "city", "postcode", "country"],
+    "additionalProperties": false
 }

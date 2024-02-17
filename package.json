@@ -21,6 +21,7 @@
     "koa-router": "^12.0.1",
     "moment": "^2.30.1",
     "mysql2": "^3.9.1",
-    "passport-jwt": "^4.0.1"
+    "passport-jwt": "^4.0.1",
+    "role-acl": "^4.5.4"
   }
 }

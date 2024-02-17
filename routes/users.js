@@ -3,28 +3,37 @@ const bodyParser = require('koa-bodyparser');
 const bcrypt = require('bcrypt');
 const model = require('../models/users');
 const auth = require('../controllers/auth');
+const can = require('../permissions/users');
 
 // Import validation functions
-const {validateUser} = require('../controllers/validation');
-const {validateUserUpdate} = require('../controllers/validation');
+const { validateUser } = require('../controllers/validation');
+const { validateUserUpdate } = require('../controllers/validation');
 
-const router = Router({prefix: '/api/v1/users'});
+const router = Router({ prefix: '/api/v1/users' });
 
 router.get('/', auth, getAll);
-router.post('/', bodyParser(), auth, validateUser, createUser);
+router.post('/', bodyParser(), validateUser, createUser); // no auth
 router.get('/:id([0-9]{1,})', auth, getById);
 router.put('/:id([0-9]{1,})', auth, bodyParser(), validateUserUpdate, updateUser);
 router.del('/:id([0-9]{1,})', auth, deleteUser);
 
+
 // get all users
 async function getAll(ctx) {
     try {
-        const page = parseInt(ctx.query.page, 10) || 1; //defaults are 1 and 10
+        const page = parseInt(ctx.query.page, 10) || 1; // defaults are 1 and 10
         const limit = parseInt(ctx.query.limit, 10) || 10;
         const order = ctx.query.order;
 
+        // Only admins
+        const permission = can.readAll(ctx.state.user);
+        if (!permission.granted) {
+            ctx.status = 403; // Forbidden
+            return;
+        }
+
         const [users] = await model.getAll(page, limit, order);
-        
+
         // If users are found, return them
         if (users.length) {
             ctx.body = users;
@@ -43,12 +52,20 @@ async function getAll(ctx) {
 // get a single user by its id
 async function getById(ctx) {
     try {
-        let id = ctx.params.id;
+        let id = parseInt(ctx.params.id) // requested data id
+
+        // Only admins and the owner
+        const permission = can.read(ctx.state.user, id);
+        if (!permission.granted) {
+            ctx.status = 403; // Forbidden
+            return;
+        }
+
         let [user] = await model.getById(id);
 
-        // If an user is found, return it
+        // If an user is found
         if (user.length) {
-            ctx.body = user[0];
+            ctx.body = permission.filter(user[0]); // filter the user using the permissions
         } else {
             ctx.status = 404;
             ctx.body = { error: 'user not found' };
@@ -61,6 +78,7 @@ async function getById(ctx) {
 }
 
 // create a new user in the database
+// no permissions required
 async function createUser(ctx) {
     try {
         const body = ctx.request.body;
@@ -71,7 +89,7 @@ async function createUser(ctx) {
         let [result] = await model.add(body);
         if (result) {
             ctx.status = 201;
-            ctx.body = {ID: result.insertId}
+            ctx.body = { ID: result.insertId }
         }
     } catch (error) {
         console.error(error.code);
@@ -85,21 +103,20 @@ async function createUser(ctx) {
 async function updateUser(ctx) {
     try {
         let user = ctx.state.user; // current user
-        const id = parseInt(ctx.params.id); // id from the url
+        const id = parseInt(ctx.params.id); // record id from the url
 
-        // Check if the user is the owner of the user
-        if (user.id !== id) {
-            ctx.status = 403; // Forbidden
-            ctx.body = { error: 'You are not allowed to update this user' };
+        // Only admins and the owner
+        const permission = can.update(user, id);
+        if (!permission.granted) {
+            ctx.status = 403;
             return;
         }
 
-        const body = ctx.request.body;
+        let body = permission.filter(ctx.request.body); // filter the body using the permissions
 
         // hash the password if it is updated
-        if (body.password) {  
-            // hash the password
-            const hashedPassword = await bcrypt.hash(body.password, 10); // 10 is the salt rounds
+        if (body.password) {
+            const hashedPassword = await bcrypt.hash(body.password, 10);
             body.password = hashedPassword;
         }
 
@@ -107,7 +124,7 @@ async function updateUser(ctx) {
         let [result] = await model.update(id, body);
         if (result.affectedRows) { // If the user is updated successfully
             ctx.status = 200;
-            ctx.body = {ID: id}
+            ctx.body = { ID: id }
         } else {
             ctx.status = 404;
             ctx.body = { error: 'User not found' };
@@ -125,10 +142,10 @@ async function deleteUser(ctx) {
         let user = ctx.state.user;
         const id = parseInt(ctx.params.id);
 
-        // Check if the user is the owner of the user
-        if (user.id !== id) {
-            ctx.status = 403; // Forbidden
-            ctx.body = { error: 'You are not allowed to delete this user' };
+        // Only admins
+        const permission = can.delete(user, id);
+        if (!permission.granted) {
+            ctx.status = 403;
             return;
         }
 
