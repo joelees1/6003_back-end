@@ -86,10 +86,24 @@ async function createAddress(ctx) {
             return;
         }
 
+        // get the users last made address to check they are not making too many requests
+        let [lastAddress] = await model.getLastAddress(id);
+        if (lastAddress) {
+            let now = new Date(); // current time
+            const last = lastAddress[0].created_at; // last address created time
+            let diff = now - last;
+
+            if (diff < 60000) { // 60 seconds
+                ctx.status = 429;
+                ctx.body = { error: 'Too many requests, wait 1 minute' };
+                return;
+            }
+        }
+
         const body = ctx.request.body;
         body.user_id = id;
 
-        let [result] = await model.add(body);
+        let [result] = await model.add(body); // create the address
         if (result) {
             ctx.status = 201;
             ctx.body = {ID: result.insertId}
