@@ -1,0 +1,98 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {
+        "address": {
+            "id": "/address",
+            "title": "Address",
+            "description": "A user's address",
+            "type": "object",
+            "properties": {
+                "address_line1": {
+                    "type": "string",
+                    "minLength": 3
+                },
+                "address_line2": {
+                    "type": "string",
+                    "minLength": 3
+                },
+                "city": {
+                    "type": "string",
+                    "minLength": 2
+                },
+                "postcode": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "country": {
+                    "type": "string",
+                    "minLength": 1
+                }
+            },
+            "required": ["address_line1", "city", "postcode", "country"],
+            "additionalProperties": false
+        },
+        "addressCreated": {
+            "id": "/addressCreated",
+            "title": "Address Created",
+            "description": "Confirmation of successful address creation",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "ID of the updated address record",
+                    "type": "integer"
+                },
+                "link": {
+                    "description": "Path to retrieve address record",
+                    "type": "string",
+                    "format": "uri"
+                }
+            }
+        },
+        "addressUpdate": {
+            "id": "/address/[id]",
+            "title": "Address Update",
+            "description": "A user updating one of their addresses",
+            "type": "object",
+            "properties": {
+                "address_line1": {
+                    "type": "string",
+                    "minLength": 3
+                },
+                "address_line2": {
+                    "type": "string",
+                    "minLength": 3
+                },
+                "city": {
+                    "type": "string",
+                    "minLength": 2
+                },
+                "postcode": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "country": {
+                    "type": "string",
+                    "minLength": 1
+                }
+            },
+            "additionalProperties": false
+        },
+        "addressUpdated": {
+            "id": "/address/[id]",
+            "title": "Address Updated",
+            "description": "Confirmation of successful address update",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "ID of the updated address record",
+                    "type": "integer"
+                },
+                "link": {
+                    "description": "Path to retrieve address record",
+                    "type": "string",
+                    "format": "uri"
+                }
+            }
+        }
+    }
+}

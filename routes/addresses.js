@@ -63,6 +63,7 @@ async function getById(ctx) {
         // If an address is found, return it
         if (address.length) {
             ctx.body = address[0];
+            ctx.status = 200;
         } else {
             ctx.status = 404;
             ctx.body = { error: 'address not found' };
@@ -94,7 +95,7 @@ async function createAddress(ctx) {
             let diff = now - last;
 
             if (diff < 60000) { // 60 seconds
-                ctx.status = 429;
+                ctx.status = 429; // Too Many Requests
                 ctx.body = { error: 'Too many requests, wait 1 minute' };
                 return;
             }
@@ -106,7 +107,7 @@ async function createAddress(ctx) {
         let [result] = await model.add(body); // create the address
         if (result) {
             ctx.status = 201;
-            ctx.body = {ID: result.insertId}
+            ctx.body = {ID: result.insertId, link: `/api/v1/users/${id}/address/${result.insertId}`};
         }
     } catch (error) {
         console.error(error.code);
@@ -136,7 +137,7 @@ async function updateAddress(ctx) {
 
         if (result.affectedRows) { // If the address is updated successfully
             ctx.status = 200;
-            ctx.body = {ID: addressId}
+            ctx.body = {ID: addressId, link: `/api/v1/users/${id}/address/${addressId}`};
         } else {
             ctx.status = 404;
             ctx.body = { error: 'Address not found' };

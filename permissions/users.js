@@ -3,7 +3,7 @@ const ac = new AccessControl();
 
 // user permissions
 ac.grant('user').condition({ Fn: 'EQUALS', args: { 'requester': '$.owner' } })
-    .execute('read').on('user', ['*', '!password']) // read own user, exclude password
+    .execute('read').on('user', ['*', '!password', '!role']) // read own user, exclude password
     .execute('update').on('user', ['username', 'first_name', 'last_name', 'email', 'password', 'phone_number']); // update own user
 
 // admin permissions

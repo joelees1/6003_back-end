@@ -66,6 +66,7 @@ async function getById(ctx) {
         // If an user is found
         if (user.length) {
             ctx.body = permission.filter(user[0]); // filter the user using the permissions
+            ctx.status = 200;
         } else {
             ctx.status = 404;
             ctx.body = { error: 'user not found' };
@@ -88,8 +89,8 @@ async function createUser(ctx) {
 
         let [result] = await model.add(body);
         if (result) {
-            ctx.status = 201;
-            ctx.body = { ID: result.insertId }
+            ctx.status = 201; // 201 Created
+            ctx.body = { ID: result.insertId, link: `/api/v1/users/${result.insertId}` };
         }
     } catch (error) {
         console.error(error.code);
@@ -112,7 +113,9 @@ async function updateUser(ctx) {
             return;
         }
 
-        let body = permission.filter(ctx.request.body); // filter the body using the permissions
+        // filter the body using the permissions
+        // if a field is not allowed to be updated, it will be removed
+        let body = permission.filter(ctx.request.body);
 
         // hash the password if it is updated
         if (body.password) {
@@ -124,7 +127,7 @@ async function updateUser(ctx) {
         let [result] = await model.update(id, body);
         if (result.affectedRows) { // If the user is updated successfully
             ctx.status = 200;
-            ctx.body = { ID: id }
+            ctx.body = { ID: id, link: `/api/v1/users/${id}` };
         } else {
             ctx.status = 404;
             ctx.body = { error: 'User not found' };

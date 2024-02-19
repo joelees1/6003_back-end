@@ -1,13 +1,8 @@
 const { Validator, ValidationError } = require('jsonschema');
 
-const userSchema = require('../schemas/user.schema.js');
-const userUpdateSchema = require('../schemas/userUpdate.schema.js');
-
-const addressSchema = require('../schemas/address.schema.js');
-const addressUpdateSchema = require('../schemas/addressUpdate.schema.js');
-
-const productSchema = require('../schemas/product.schema.js');
-const productUpdateSchema = require('../schemas/productUpdate.schema.js');
+const { user: userSchema, userUpdate: userUpdateSchema } = require('../schemas/user.json').definitions;
+const { address: addressSchema, addressUpdate: addressUpdateSchema } = require('../schemas/address.json').definitions;
+const { product: productSchema, productUpdate: productUpdateSchema } = require('../schemas/product.json').definitions;
 
 const v = new Validator();
 

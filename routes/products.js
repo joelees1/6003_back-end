@@ -49,6 +49,7 @@ async function getProductById(ctx) {
         // If a product is found, return it
         if (product.length) {
             ctx.body = product[0];
+            ctx.status = 200;
         } else {
             ctx.status = 404;
             ctx.body = { error: 'item not found' };
@@ -76,7 +77,7 @@ async function createProduct(ctx) {
         let [result] = await model.add(body); // create the product
         if (result) {
             ctx.status = 201;
-            ctx.body = {ID: result.insertId}
+            ctx.body = {ID: result.insertId, link: `/api/v1/products/${result.insertId}`};
         }
     } catch (error) {
         console.error(error.code);

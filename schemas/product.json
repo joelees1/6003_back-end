@@ -1,0 +1,118 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {
+        "product": {
+            "id": "/product",
+            "title": "Product",
+            "description": "A product on the platform",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "Name of the product",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "description": {
+                    "description": "Description of the product",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "creator": {
+                    "description": "Creator of the product",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "price": {
+                    "description": "Price of the product",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "category_id": {
+                    "description": "Catagory of the product",
+                    "type": "number"
+                },
+                "image_url": {
+                    "description": "Image url of the product",
+                    "type": "string"
+                }
+            },
+            "required": ["name", "description", "price"],
+            "additionalProperties": false
+        },
+        "productCreated": {
+            "id": "/productCreated",
+            "title": "Product Created",
+            "description": "Confirmation of product creation",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "id of the product",
+                    "type": "integer"
+                },
+                "link": {
+                    "description": "Path to retrieve product",
+                    "type": "string",
+                    "format": "uri"
+                }
+            }
+        },
+        "productUpdate":{
+            "id": "/productUpdate",
+            "title": "Product Update",
+            "description": "Update a product record",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "Name of the product",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "description": {
+                    "description": "Description of the product",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "creator": {
+                    "description": "Creator of the product",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "price": {
+                    "description": "Price of the product",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "sold": {
+                    "description": "Sold status of the product",
+                    "type": "boolean"
+                },
+                "category_id": {
+                    "description": "Catagory of the product",
+                    "type": "number"
+                },
+                "image_url": {
+                    "description": "Image url of the product",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "productUpdated": {
+            "id": "/productUpdated",
+            "title": "Product Updated",
+            "description": "Confirmation of product update",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "id of the product",
+                    "type": "integer"
+                },
+                "link": {
+                    "description": "Path to retrieve product",
+                    "type": "string",
+                    "format": "uri"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,336 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Back End Coursework API
+  description: A simple e-commerce API.
+  contact:
+    name: Joseph Lees
+    email: leesj4@coventry.ac.uk
+  license:
+    name: Apache 2.0
+    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  - url: 'http://localhost:3000/api/v1'
+    description: Development server
+tags:
+  - name: Users
+    description: Crud operations for user management
+  - name: Addresses
+    description: Operations for user addresses
+  - name: Products
+    description: Crud operations for products
+paths:
+  /users:
+    summary: Represents an individual user
+    description: >
+      This resource represents an individual user in the system.
+      Each user is identified by a numeric `id`.
+    post:
+      tags:
+        - Users
+      description:
+        Create a new user account.
+      requestBody:
+        description: new user information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./user.json#/definitions/user
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: ./user.json#/definitions/userCreated
+        '500':
+          description: Internal server error.
+    get:
+      tags:
+        - Users
+      description:
+        Get all users.
+      responses:
+        '200':
+          description: View of all users records
+        '403':
+          description: Non-admin users can only view their own record.
+        '404':
+          description: No users found in the DB.
+        '500':
+          description: Internal server error.
+  /users/{id}:
+    parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric id of the user
+    get:
+      tags:
+        - Users
+      description:
+        Get user by id.
+      responses:
+        '200':
+          description: View of a users record, filtered attributes by role.
+        '403':
+          description: Non-admin users can only view their own record.
+        '404':
+          description: User was not found in the DB.
+        '500':
+          description: Internal server error.
+    put:
+      tags:
+        - Users
+      description:
+        Update user by id.
+      requestBody:
+        description: updated user information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./user.json#/definitions/userUpdate
+      responses:
+        '200':
+          description: User was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: ./user.json#/definitions/userUpdated
+        '403':
+          description: Non-admin users can only update their own record.
+        '404':
+          description: User was not found in the DB.
+        '500':
+          description: Internal server error.
+    delete:
+      tags:
+        - Users
+      description:
+        Delete user by id.
+      responses:
+        '204':
+          description: User was deleted successfully.
+        '403':
+          description: Non-admin users can't delete user records.
+        '404':
+          description: User was not found in the DB.
+        '500':
+          description: Internal server error.
+  /users/{id}/addresses:
+    parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric id of the user
+    get:
+      tags:
+        - Addresses
+      description:
+        Get all addresses for a user.
+      responses:
+        '200':
+          description: View all addresses for a user.
+        '403':
+          description: Non-admin users can only view their own addresses.
+        '404':
+          description: No addresses found for the user.
+        '500':
+          description: Internal server error.
+    post:
+      tags:
+        - Addresses
+      description:
+        Create a new address for the user.
+      requestBody:
+        description: new address information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./address.json#/definitions/address
+      responses:
+        '201':
+          description: Address created
+          content:
+            application/json:
+              schema:
+                $ref: ./address.json#/definitions/addressCreated
+        '403':
+          description: Non-admin users can only create addresses for themselves.
+        '429':
+          description: User has made a post request too recently.
+        '500':
+          description: Internal server error.
+  /users/{id}/addresses/{addressId}:
+    parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric id of the user
+        - in: path
+          name: addressId
+          schema:
+            type: integer
+          required: true
+          description: Numeric id of the address
+    get:
+      tags:
+        - Addresses
+      description:
+        Get address by id.
+      responses:
+        '200':
+          description: Address record retrieved.
+        '403':
+          description: Non-admin users can only view their own addresses.
+        '404':
+          description: Address was not found in the DB.
+        '500':
+          description: Internal server error.
+    put:
+      tags:
+        - Addresses
+      description:
+        Update address by id.
+      requestBody:
+        description: updated address information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./address.json#/definitions/addressUpdate
+      responses:
+        '200':
+          description: Address was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: ./address.json#/definitions/addressUpdated
+        '403':
+          description: Non-admin users can only update their own addresses.
+        '404':
+          description: Address was not found in the DB.
+        '500':
+          description: Internal server error.
+    delete:
+      tags:
+        - Addresses
+      description:
+        Delete address by id.
+      responses:
+        '204':
+          description: Address was deleted successfully.
+        '403':
+          description: Non-admin users can only delete their own addresses.
+        '404':
+          description: Address was not found in the DB.
+        '500':
+          description: Internal server error.
+  /products:
+    summary: Represents an individual product
+    description: >
+      This resource represents an individual product in the system.
+      Each product is identified by a numeric `id`.
+    post:
+      tags:
+        - Products
+      description:
+        Create a new product.
+      requestBody:
+        description: new product information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./product.json#/definitions/product
+      responses:
+        '201':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: ./product.json#/definitions/productCreated
+        '403':
+          description: Non-admin users can't create products.
+        '500':
+          description: Internal server error.
+    get:
+      tags:
+        - Products
+      description:
+        Get all products.
+      responses:
+        '200':
+          description: View of all products records
+        '404':
+          description: No products found in the DB.
+        '500':
+          description: Internal server error.
+  /products/{id}:
+    parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric id of the product
+    get:
+      tags:
+        - Products
+      description:
+        Get product by id.
+      responses:
+        '200':
+          description: View of a products record.
+        '404':
+          description: Product was not found in the DB.
+        '500':
+          description: Internal server error.
+    put:
+      tags:
+        - Products
+      description:
+        Update product by id.
+      requestBody:
+        description: updated product information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./product.json#/definitions/productUpdate
+      responses:
+        '200':
+          description: Product was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: ./product.json#/definitions/productUpdated
+        '403':
+          description: Non-admin users can't update products.
+        '404':
+          description: Product was not found in the DB.
+        '500':
+          description: Internal server error.
+    delete:
+      tags:
+        - Products
+      description:
+        Delete product by id.
+      responses:
+        '204':
+          description: Product was deleted successfully.
+        '403':
+          description: Non-admin users can't delete products.
+        '404':
+          description: Product was not found in the DB.
+        '500':
+          description: Internal server error.
