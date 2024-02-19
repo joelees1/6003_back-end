@@ -1,0 +1,78 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {
+        "category": {
+            "id": "/category",
+            "title": "Category",
+            "description": "A product on the platform",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "Category name",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "description": {
+                    "description": "Description of the category",
+                    "type": "string",
+                    "minLength": 1
+                }
+            },
+            "required": ["name", "description"],
+            "additionalProperties": false
+        },
+        "categoryCreated": {
+            "id": "/categoryCreated",
+            "title": "Category Created",
+            "description": "Confirmation of category creation",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "id of the category",
+                    "type": "integer"
+                },
+                "link": {
+                    "description": "Path to retrieve category",
+                    "type": "string",
+                    "format": "uri"
+                }
+            }            
+        },
+        "categoryUpdate": {
+            "id": "/categoryUpdate",
+            "title": "Category Update",
+            "description": "Update a category",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "Category name",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "description": {
+                    "description": "Description of the category",
+                    "type": "string",
+                    "minLength": 1
+                }
+            },
+            "additionalProperties": false
+        },
+        "categoryUpdated": {
+            "id": "/categoryUpdated",
+            "title": "Category Updated",
+            "description": "Confirmation of category update",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "id of the category",
+                    "type": "integer"
+                },
+                "link": {
+                    "description": "Path to retrieve category",
+                    "type": "string",
+                    "format": "uri"
+                }
+            }            
+        }
+    }
+}

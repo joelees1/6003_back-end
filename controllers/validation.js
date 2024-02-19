@@ -3,6 +3,7 @@ const { Validator, ValidationError } = require('jsonschema');
 const { user: userSchema, userUpdate: userUpdateSchema } = require('../schemas/user.json').definitions;
 const { address: addressSchema, addressUpdate: addressUpdateSchema } = require('../schemas/address.json').definitions;
 const { product: productSchema, productUpdate: productUpdateSchema } = require('../schemas/product.json').definitions;
+const { category: categorySchema, categoryUpdate: categoryUpdateSchema } = require('../schemas/category.json').definitions;
 
 const v = new Validator();
 
@@ -152,6 +153,60 @@ exports.validateProductUpdate = async (ctx, next) => {
 
     try {
         v.validate(body, productUpdateSchema, validationOptions);
+        await next();
+    } catch (error) {
+        if (error instanceof ValidationError) {
+            // Extract error details
+            const errorMessage = {
+                message: 'Validation Error',
+                details: error.message
+            };
+            ctx.body = errorMessage;
+            ctx.status = 400;
+        } else {
+            throw error;
+        }
+    }
+}
+
+// create category validation
+exports.validateCategory = async (ctx, next) => {
+    const validationOptions = {
+        throwError: true,
+        allowUnknownAttributes: false
+    };
+
+    const body = ctx.request.body;
+
+    try {
+        v.validate(body, categorySchema, validationOptions);
+        await next();
+    } catch (error) {
+        if (error instanceof ValidationError) {
+            // Extract error details
+            const errorMessage = {
+                message: 'Validation Error',
+                details: error.message
+            };
+            ctx.body = errorMessage;
+            ctx.status = 400;
+        } else {
+            throw error;
+        }
+    }
+}
+
+// update category validation
+exports.validateCategoryUpdate = async (ctx, next) => {
+    const validationOptions = {
+        throwError: true,
+        allowUnknownAttributes: false
+    };
+
+    const body = ctx.request.body;
+
+    try {
+        v.validate(body, categoryUpdateSchema, validationOptions);
         await next();
     } catch (error) {
         if (error instanceof ValidationError) {

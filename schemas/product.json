@@ -28,7 +28,7 @@
                     "minimum": 0
                 },
                 "category_id": {
-                    "description": "Catagory of the product",
+                    "description": "Category of the product",
                     "type": "number"
                 },
                 "image_url": {
@@ -87,7 +87,7 @@
                     "type": "boolean"
                 },
                 "category_id": {
-                    "description": "Catagory of the product",
+                    "description": "Category of the product",
                     "type": "number"
                 },
                 "image_url": {

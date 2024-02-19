@@ -4,7 +4,7 @@ const ac = new AccessControl();
 // reading products getAll/byid requires no login
 // user permissions
 ac.grant('user')
-    .execute('read').on('product'); // ***HOW TO NOT WRITE ANYTHING AND STILL NOT GRANT USER ANY PERMISSIONS***
+    .execute('read').on('product');
 
 // admin permissions
 ac.grant('admin')

@@ -1,17 +1,22 @@
 const db = require('../helpers/database');
 
 // get all products
-exports.getAll = async function getAllProducts (page, limit, order) {
+exports.getAll = async function getAllProducts (page, limit, order, category) {
     // get all rows from the products table
     let query = "SELECT * FROM products";
     let values = [];
-
+    
+    if (category) {
+        query += " WHERE category_id = ?";
+        values.push(category);
+    }
     if (order) {
         query += ` ORDER BY ${order}`;
     }
     if (page && limit) {
         query += " LIMIT ? OFFSET ?";
-        values = [limit, (page - 1) * limit];
+        values.push(limit);
+        values.push((page - 1) * limit);
     }
     
     const data = await db.run_query(query, values);

@@ -21,8 +21,9 @@ async function getAllProducts(ctx) {
         const page = parseInt(ctx.query.page, 10) || 1; // defaults are 1 and 10
         const limit = parseInt(ctx.query.limit, 10) || 10;
         const order = ctx.query.order;
+        const category = parseInt(ctx.query.category); // category filter
 
-        const [products] = await model.getAll(page, limit, order);
+        const [products] = await model.getAll(page, limit, order, category);
 
         // If products are found, return them
         if (products.length) {

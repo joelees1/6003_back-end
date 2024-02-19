@@ -19,6 +19,8 @@ tags:
     description: Operations for user addresses
   - name: Products
     description: Crud operations for products
+  - name: Categories
+    description: Crud operations for categories
 paths:
   /users:
     summary: Represents an individual user
@@ -332,5 +334,108 @@ paths:
           description: Non-admin users can't delete products.
         '404':
           description: Product was not found in the DB.
+        '500':
+          description: Internal server error.
+  /categories:
+    summary: Represents an individual category
+    description: >
+      This resource represents an individual category in the system.
+      Each category is identified by a numeric `id`.
+    post:
+      tags:
+        - Categories
+      description:
+        Create a new category.
+      requestBody:
+        description: new category information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./category.json#/definitions/category
+      responses:
+        '201':
+          description: Category created
+          content:
+            application/json:
+              schema:
+                $ref: ./category.json#/definitions/categoryCreated
+        '403':
+          description: Non-admin users can't create categories.
+        '500':
+          description: Internal server error.
+    get:
+      tags:
+        - Categories
+      description:
+        Get all categories.
+      responses:
+        '200':
+          description: View of all category records
+        '403':
+          description: Non-admin users can't view categories.
+        '404':
+          description: No categories found in the DB.
+        '500':
+          description: Internal server error.
+  /categories/{id}:
+    parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric id of the category
+    get:
+      tags:
+        - Categories
+      description:
+        Get category by id.
+      responses:
+        '200':
+          description: View of a category record.
+        '403':
+          description: Non-admins cannot view categories.
+        '404':
+          description: Category was not found in the DB.
+        '500':
+          description: Internal server error.
+    put:
+      tags:
+        - Categories
+      description:
+        Update category by id.
+      requestBody:
+        description: updated category information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./category.json#/definitions/categoryUpdate
+      responses:
+        '200':
+          description: Category was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: ./category.json#/definitions/categoryUpdated
+        '403':
+          description: Non-admin users can't update categories.
+        '404':
+          description: Category was not found in the DB.
+        '500':
+          description: Internal server error.
+    delete:
+      tags:
+        - Categories
+      description:
+        Delete category by id.
+      responses:
+        '204':
+          description: Category was deleted successfully.
+        '403':
+          description: Non-admin users can't delete categories.
+        '404':
+          description: Category was not found in the DB.
         '500':
           description: Internal server error.
