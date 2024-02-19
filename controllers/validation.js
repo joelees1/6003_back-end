@@ -1,8 +1,14 @@
 const { Validator, ValidationError } = require('jsonschema');
+
 const userSchema = require('../schemas/user.schema.js');
 const userUpdateSchema = require('../schemas/userUpdate.schema.js');
+
 const addressSchema = require('../schemas/address.schema.js');
 const addressUpdateSchema = require('../schemas/addressUpdate.schema.js');
+
+const productSchema = require('../schemas/product.schema.js');
+const productUpdateSchema = require('../schemas/productUpdate.schema.js');
+
 const v = new Validator();
 
 // create user validation schema
@@ -69,7 +75,7 @@ exports.validateAddress = async (ctx, next) => {
     const body = ctx.request.body;
 
     try {
-        v.validate(body, addressSchema, validationOptions); // Validate against user update schema
+        v.validate(body, addressSchema, validationOptions);
         await next();
     } catch (error) {
         if (error instanceof ValidationError) {
@@ -96,7 +102,61 @@ exports.validateAddressUpdate = async (ctx, next) => {
     const body = ctx.request.body;
 
     try {
-        v.validate(body, addressUpdateSchema, validationOptions); // Validate against user update schema
+        v.validate(body, addressUpdateSchema, validationOptions);
+        await next();
+    } catch (error) {
+        if (error instanceof ValidationError) {
+            // Extract error details
+            const errorMessage = {
+                message: 'Validation Error',
+                details: error.message
+            };
+            ctx.body = errorMessage;
+            ctx.status = 400;
+        } else {
+            throw error;
+        }
+    }
+}
+
+// create product validation
+exports.validateProduct = async (ctx, next) => {
+    const validationOptions = {
+        throwError: true,
+        allowUnknownAttributes: false
+    };
+
+    const body = ctx.request.body;
+
+    try {
+        v.validate(body, productSchema, validationOptions);
+        await next();
+    } catch (error) {
+        if (error instanceof ValidationError) {
+            // Extract error details
+            const errorMessage = {
+                message: 'Validation Error',
+                details: error.message
+            };
+            ctx.body = errorMessage;
+            ctx.status = 400;
+        } else {
+            throw error;
+        }
+    }
+}
+
+// update product validation
+exports.validateProductUpdate = async (ctx, next) => {
+    const validationOptions = {
+        throwError: true,
+        allowUnknownAttributes: false
+    };
+
+    const body = ctx.request.body;
+
+    try {
+        v.validate(body, productUpdateSchema, validationOptions);
         await next();
     } catch (error) {
         if (error instanceof ValidationError) {
