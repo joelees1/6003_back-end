@@ -95,7 +95,7 @@ async function createAddress(ctx) {
             let diff = now - last;
 
             if (diff < 60000) { // 60 seconds
-                ctx.status = 429;
+                ctx.status = 429; // Too Many Requests
                 ctx.body = { error: 'Too many requests, wait 1 minute' };
                 return;
             }
@@ -137,7 +137,7 @@ async function updateAddress(ctx) {
 
         if (result.affectedRows) { // If the address is updated successfully
             ctx.status = 200;
-            ctx.body = {ID: addressId}
+            ctx.body = {ID: addressId, link: `/api/v1/users/${id}/address/${addressId}`};
         } else {
             ctx.status = 404;
             ctx.body = { error: 'Address not found' };
