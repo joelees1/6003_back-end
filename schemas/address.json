@@ -1,8 +1,8 @@
-module.exports = {
+{
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "id": "/address/update",
-    "title": "Address Update",
-    "description": "A user updating their address",
+    "id": "/address",
+    "title": "Address",
+    "description": "A user's address",
     "type": "object",
     "properties": {
         "address_line1": {
@@ -26,5 +26,6 @@ module.exports = {
             "minLength": 1
         }
     },
+    "required": ["address_line1", "city", "postcode", "country"],
     "additionalProperties": false
 }

@@ -1,4 +1,4 @@
-module.exports = {
+{
     "$schema": "http://json-schema.org/draft-04/schema#",
     "id": "/product",
     "title": "Product",
@@ -25,6 +25,10 @@ module.exports = {
             "type": "number",
             "minimum": 0
         },
+        "sold": {
+            "description": "Stock status of the product",
+            "type": "boolean"
+        },
         "category_id": {
             "description": "Catagory of the product",
             "type": "number"
@@ -34,6 +38,5 @@ module.exports = {
             "type": "string"
         }
     },
-    "required": ["name", "description", "price"],
     "additionalProperties": false
 }

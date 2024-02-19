@@ -1,0 +1,123 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Back End Coursework API
+  description: A simple e-commerce API.
+  contact:
+    name: Joseph Lees
+    email: leesj4@coventry.ac.uk
+  license:
+    name: Apache 2.0
+    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  - url: 'http://localhost:3000/api/v1'
+    description: Development server
+tags:
+  - name: Users
+    description: Crud operations for user management
+  - name: Addresses
+    description: Operations for user addresses
+  - name: Products
+    description: Crud operations for products
+paths:
+  /users:
+    summary: Represents an individual user
+    description: >
+      This resource represents an individual user in the system.
+      Each user is identified by a numeric `id`.
+    post:
+      tags:
+        - Users
+      description:
+        Create a new user account.
+      requestBody:
+        description: new user information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./user.json#/definitions/user
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: ./user.json#/definitions/userCreated
+        '500':
+          description: Internal server error.
+    get:
+      tags:
+        - Users
+      description:
+        Get all users.
+      responses:
+        '200':
+          description: View of all users records
+        '403':
+          description: Non-admin users can only view their own record.
+        '404':
+          description: No users found in the DB.
+        '500':
+          description: Internal server error.
+  /users/{id}:
+    parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric id of the user
+    get:
+      tags:
+        - Users
+      description:
+        Get user by id.
+      responses:
+        '200':
+          description: View of a users record, filtered attributes by role.
+        '403':
+          description: Non-admin users can only view their own record.
+        '404':
+          description: User was not found in the DB.
+        '500':
+          description: Internal server error.
+    put:
+      tags:
+        - Users
+      description:
+        Update user by id.
+      requestBody:
+        description: updated user information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./user.json#/definitions/userUpdate
+      responses:
+        '200':
+          description: User was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: ./user.json#/definitions/userUpdated
+        '403':
+          description: Non-admin users can only update their own record.
+        '404':
+          description: User was not found in the DB.
+        '500':
+          description: Internal server error.
+    delete:
+      tags:
+        - Users
+      description:
+        Delete user by id.
+      responses:
+        '204':
+          description: User was deleted successfully.
+        '403':
+          description: Non-admin users can't delete user records.
+        '404':
+          description: User was not found in the DB.
+        '500':
+          description: Internal server error.

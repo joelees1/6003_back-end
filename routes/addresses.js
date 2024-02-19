@@ -63,6 +63,7 @@ async function getById(ctx) {
         // If an address is found, return it
         if (address.length) {
             ctx.body = address[0];
+            ctx.status = 200;
         } else {
             ctx.status = 404;
             ctx.body = { error: 'address not found' };
@@ -106,7 +107,7 @@ async function createAddress(ctx) {
         let [result] = await model.add(body); // create the address
         if (result) {
             ctx.status = 201;
-            ctx.body = {ID: result.insertId}
+            ctx.body = {ID: result.insertId, link: `/api/v1/users/${id}/address/${result.insertId}`};
         }
     } catch (error) {
         console.error(error.code);
