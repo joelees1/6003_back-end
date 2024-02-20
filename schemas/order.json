@@ -43,7 +43,8 @@
                 },
                 "link": {
                     "description": "Link to the order",
-                    "type": "string"
+                    "type": "string",
+                    "format": "uri"
                 }
             }
         },
@@ -79,9 +80,14 @@
             "description": "Confirmation of a order being updated",
             "type": "object",
             "properties": {
+                "id": {
+                    "description": "Id of the order",
+                    "type": "integer"
+                },
                 "link": {
                     "description": "Link to the order",
-                    "type": "string"
+                    "type": "string",
+                    "format": "uri"
                 }
             }
         }

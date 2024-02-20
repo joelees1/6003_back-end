@@ -154,7 +154,7 @@ async function updateOrder(ctx) {
 
         if (result.affectedRows) {
             ctx.status = 200;
-            ctx.body = {link: `/api/v1/categories/${orderId}`};
+            ctx.body = {Id: orderId, link: `/api/v1/categories/${orderId}`};
         } else {
             ctx.status = 404;
             ctx.body = { error: 'Order not found' };
