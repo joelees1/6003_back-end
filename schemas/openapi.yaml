@@ -21,6 +21,10 @@ tags:
     description: Crud operations for products
   - name: Categories
     description: Crud operations for categories
+  - name: Orders
+    description: Crud operations for orders
+  - name: Login
+    description: User login
 paths:
   /users:
     summary: Represents an individual user
@@ -542,5 +546,29 @@ paths:
           description: Non-admin users can't delete orders.
         '404':
           description: Order was not found in the DB.
+        '500':
+          description: Internal server error.
+  /login:
+    post:
+      tags:
+        - Login
+      description:
+        Login to the system.
+      requestBody:
+        description: user login information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./login.json#/definitions/login
+      responses:
+        '200':
+          description: User logged in successfully.
+          content:
+            application/json:
+              schema:
+                $ref: ./login.json#/definitions/loggedIn
+        '401':
+          description: User login failed.
         '500':
           description: Internal server error.

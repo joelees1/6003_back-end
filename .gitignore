@@ -106,3 +106,6 @@ dist
 config.js
 
 .DS_Store
+
+# ignore any jsdoc output
+/docs/jsdocs

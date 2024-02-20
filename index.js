@@ -8,15 +8,35 @@ const products = require('./routes/products.js');
 const categories = require('./routes/categories.js');
 const orders = require('./routes/orders.js');
 
-const app = new Koa();
-app.use(passport.initialize()); // Initialize Passport
+/** Initializes and configures a Koa application instance.
+ * @function createApp
+ * @returns {Koa} The configured Koa application object.
+ */
+function createApp() {
+    const app = new Koa();
 
-app.use(special.routes());
-app.use(users.routes());
-app.use(addresses.routes());
-app.use(products.routes());
-app.use(categories.routes());
-app.use(orders.routes());
+    // configure passport
+    app.use(passport.initialize()); 
 
-let port = process.env.PORT || 3000;
-app.listen(port);
+    // Attach application routes for various resources
+    app.use(special.routes());
+    app.use(users.routes());
+    app.use(addresses.routes());
+    app.use(products.routes());
+    app.use(categories.routes());
+    app.use(orders.routes());
+
+    return app;
+}
+
+/** Starts the Koa server on a specified port.
+ * @function startServer
+ * @param {number} [port=3000] - The port to listen on.
+ */
+function startServer(port = 3000) {
+    const app = createApp();
+    app.listen(port);
+}
+
+// Start the server
+startServer(); 
