@@ -115,6 +115,7 @@ async function updateUser(ctx) {
 
         // filter the body using the permissions
         // if a field is not allowed to be updated, it will be removed
+        // as admins and users can update different fields
         let body = permission.filter(ctx.request.body);
 
         // hash the password if it is updated

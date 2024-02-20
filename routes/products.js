@@ -129,7 +129,8 @@ async function deleteProduct(ctx) {
             return;
         }
 
-        let [result] = await model.delete(productId); // delete
+        let [result] = await model.delete(productId);
+        
         if (result.affectedRows) {
             ctx.status = 204; // 204 No Content
         } else {

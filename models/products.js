@@ -1,5 +1,13 @@
 const db = require('../helpers/database');
 
+// update sold to true
+exports.updateSold = async function updateSold (id) {
+    let query = "UPDATE products SET sold = TRUE WHERE ID = ?";
+    let values = [id];
+    let data = await db.run_query(query, values);
+    return data;
+}
+
 // get all products
 exports.getAll = async function getAllProducts (page, limit, order, category) {
     // get all rows from the products table

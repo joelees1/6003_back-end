@@ -9,8 +9,8 @@ const {validateCategoryUpdate} = require('../controllers/validation');
 
 const router = Router({prefix: '/api/v1/categories'});
 
-/* Category admin methods to manage resource,
-as category is a filter for products, this is sent as a query parameter */
+/* admin methods to manage category resource,
+as category is a filter for products, this is sent as a query parameter in products */
 
 router.get('/', auth, getAllCategories);
 router.post('/', auth, bodyParser(), validateCategory, createCategory);
@@ -111,9 +111,9 @@ async function updateCategory(ctx) {
         }
 
         const body = ctx.request.body;
-        let result = await model.update(categoryId, body);
+        let [result] = await model.update(categoryId, body);
 
-        if (result) {
+        if (result.affectedRows) {
             ctx.status = 200;
             ctx.body = {ID: categoryId, link: `/api/v1/categories/${categoryId}`};
         } else {

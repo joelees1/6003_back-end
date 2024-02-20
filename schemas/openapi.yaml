@@ -165,7 +165,7 @@ paths:
               schema:
                 $ref: ./address.json#/definitions/addressCreated
         '403':
-          description: Non-admin users can only create addresses for themselves.
+          description: Non-admin users can only create addresses for themselves, or the user already has a registered address.
         '429':
           description: User has made a post request too recently.
         '500':
@@ -437,5 +437,110 @@ paths:
           description: Non-admin users can't delete categories.
         '404':
           description: Category was not found in the DB.
+        '500':
+          description: Internal server error.
+  /orders:
+    summary: Represents a single order
+    description: >
+      This resource represents an order in the system.
+      Each order is identified by a numeric `id`.
+    post:
+      tags:
+        - Orders
+      description:
+        Create a new order.
+      requestBody:
+        description: new order information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./order.json#/definitions/order
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: ./order.json#/definitions/orderCreated
+        '400':
+          description: The product has already sold.
+        '403':
+          description: Both users and admins can create orders, kept permission check incase of future change to roles.
+        '404':
+          description: Product or address was not found in the DB.
+        '500':
+          description: Internal server error.
+    get:
+      tags:
+        - Orders
+      description:
+        Get all orders, or user orders if user is not an admin.
+      responses:
+        '200':
+          description: View of order records
+        '404':
+          description: No orders found in the DB.
+        '500':
+          description: Internal server error.
+  /orders/{id}:
+    parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric id of the order
+    get:
+      tags:
+        - Orders
+      description:
+        Get order by id.
+      responses:
+        '200':
+          description: View of an order record.
+        '403':
+          description: Non-admin users can only view their own orders.
+        '404':
+          description: Order was not found in the DB.
+        '500':
+          description: Internal server error.
+    put:
+      tags:
+        - Orders
+      description:
+        Update order by id.
+      requestBody:
+        description: updated order information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./order.json#/definitions/orderUpdate
+      responses:
+        '200':
+          description: Order was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: ./order.json#/definitions/orderUpdated
+        '403':
+          description: Non-admin users can't update orders.
+        '404':
+          description: Order was not found in the DB.
+        '500':
+          description: Internal server error.
+    delete:
+      tags:
+        - Orders
+      description:
+        Delete order by id.
+      responses:
+        '204':
+          description: Order was deleted successfully.
+        '403':
+          description: Non-admin users can't delete orders.
+        '404':
+          description: Order was not found in the DB.
         '500':
           description: Internal server error.

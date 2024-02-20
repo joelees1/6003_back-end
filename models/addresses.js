@@ -18,14 +18,6 @@ exports.getById = async function getById (addressId, userId) {
     return data;
 }
 
-// Get the last address created by a user
-exports.getLastAddress = async function getLastAddress(userId) {
-    let query = "SELECT * FROM addresses WHERE user_id = ? ORDER BY created_at DESC LIMIT 1";
-    let values = [userId];
-    let data = await db.run_query(query, values);
-    return data;
-};
-
 //create a new address
 exports.add = async function addAddress (address) {
     let query = "INSERT INTO addresses SET ?";

@@ -1,0 +1,89 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {
+        "order": {
+            "id": "/order",
+            "title": "Order",
+            "description": "A order placed on the platform",
+            "type": "object",
+            "properties": {
+                "product_id": {
+                    "description": "Id of the product being ordered, passed by frontend",
+                    "type": "integer"
+                }
+            },
+            "required": ["product_id"],
+            "additionalProperties": false
+        },
+        "orderCreated": {
+            "id": "/orderCreated",
+            "title": "Order Created",
+            "description": "Confirmation of a order being created",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "Id of the order",
+                    "type": "integer"
+                },
+                "product_id": {
+                    "description": "Id of the product being ordered",
+                    "type": "integer"
+                },
+                "total_price": {
+                    "description": "Total price of the order",
+                    "type": "number"
+                },
+                "user_id": {
+                    "description": "Id of the user who placed the order",
+                    "type": "integer"
+                },
+                "address_id": {
+                    "description": "Id of the address where the order is to be delivered",
+                    "type": "integer"
+                },
+                "link": {
+                    "description": "Link to the order",
+                    "type": "string"
+                }
+            }
+        },
+        "orderUpdate": {
+            "id": "/orderUpdate",
+            "title": "Order Update",
+            "description": "Update a order",
+            "type": "object",
+            "properties": {
+                "product_id": {
+                    "description": "Id of the product being ordered",
+                    "type": "integer"
+                },
+                "total_price": {
+                    "description": "Total price of the order",
+                    "type": "number"
+                },
+                "status": {
+                    "description": "Status of the order",
+                    "type": "string",
+                    "enum": ["pending", "confirmed", "shipped", "delivered", "cancelled"]
+                },
+                "address_id": {
+                    "description": "Id of the address where the order is to be delivered",
+                    "type": "integer"
+                }
+            },
+            "additionalProperties": false
+        },
+        "orderUpdated": {
+            "id": "/orderUpdated",
+            "title": "Order Updated",
+            "description": "Confirmation of a order being updated",
+            "type": "object",
+            "properties": {
+                "link": {
+                    "description": "Link to the order",
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
