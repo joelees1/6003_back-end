@@ -1,3 +1,11 @@
+/** This module provides a strategy for passport.js to authenticate users comparing a JSON Web Token.
+ * @module strategies/jwt
+ * @requires passport-jwt
+ * @requires config
+ * @requires models/users 
+ * @see models/users for db operations
+ */
+
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const users = require('../models/users');
@@ -8,7 +16,12 @@ const jwtOptions = {
     secretOrKey: config.jwtSecret
   };
 
-// called from auth to check jwt
+/** checkJwt function called from auth to check jwt
+ * @async
+ * @param {object} jwtPayload - jwt payload
+ * @param {function} done - callback function
+ * @returns {Promise} - Promise object represents the result of the comparison 
+*/
 const checkJwt = async (jwtPayload, done) => {
     try {
         const [user] = await users.findByUsername(jwtPayload.username);

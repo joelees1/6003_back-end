@@ -1,3 +1,20 @@
+/**
+ * @module routes/users
+ * @description API routes for managing users, providing CRUD operations along with authorization enforcement.
+ * @requires koa-router
+ * @requires koa-bodyparser
+ * @requires models/users
+ * @requires models/products
+ * @requires models/addresses
+ * @requires controllers/auth
+ * @requires permissions/users
+ * @requires controllers/validation
+ * @see models/users for db operations
+ * @see controllers/auth for auth middleware
+ * @see permissions/users for permissions
+ * @see controllers/validation for validation functions
+ */
+
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
 const bcrypt = require('bcrypt');
@@ -18,7 +35,10 @@ router.put('/:id([0-9]{1,})', auth, bodyParser(), validateUserUpdate, updateUser
 router.del('/:id([0-9]{1,})', auth, deleteUser);
 
 
-// get all users
+/** get all users
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+ */
 async function getAll(ctx) {
     try {
         const page = parseInt(ctx.query.page, 10) || 1; // defaults are 1 and 10
@@ -49,7 +69,10 @@ async function getAll(ctx) {
     }
 }
 
-// get a single user by its id
+/** get a single user by its id
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+ */
 async function getById(ctx) {
     try {
         let id = parseInt(ctx.params.id) // requested data id
@@ -78,8 +101,10 @@ async function getById(ctx) {
     }
 }
 
-// create a new user in the database
-// no permissions required
+/** create a new user
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+ */
 async function createUser(ctx) {
     try {
         const body = ctx.request.body;
@@ -100,7 +125,10 @@ async function createUser(ctx) {
     }
 }
 
-// update an existing user with the supplied fields
+/** update an existing user with the supplied fields
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+ */
 async function updateUser(ctx) {
     try {
         let user = ctx.state.user; // current user
@@ -140,7 +168,10 @@ async function updateUser(ctx) {
     }
 }
 
-// delete an existing user
+/** delete an existing user
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+ */
 async function deleteUser(ctx) {
     try {
         let user = ctx.state.user;

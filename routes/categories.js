@@ -1,16 +1,29 @@
+/**
+ * @module routes/categories
+ * @description Admin API routes for managing categories, providing CRUD operations along with authorization enforcement.
+ * @requires koa-router
+ * @requires koa-bodyparser
+ * @requires models/categories
+ * @requires controllers/auth
+ * @requires permissions/categories
+ * @requires controllers/validation
+ * @see models/categories for db operations
+ * @see controllers/auth for auth middleware
+ * @see permissions/categories for permissions
+ * @see controllers/validation for validation functions
+ */
+
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
 const model = require('../models/categories');
 const auth = require('../controllers/auth');
 const can = require('../permissions/categories');
 
+// Import validation functions
 const {validateCategory} = require('../controllers/validation');
 const {validateCategoryUpdate} = require('../controllers/validation');
 
 const router = Router({prefix: '/api/v1/categories'});
-
-/* admin methods to manage category resource,
-as category is a filter for products, this is sent as a query parameter in products */
 
 router.get('/', auth, getAllCategories);
 router.post('/', auth, bodyParser(), validateCategory, createCategory);
@@ -18,7 +31,11 @@ router.get('/:categoryId([0-9]{1,})', auth, getCategoryById);
 router.put('/:categoryId([0-9]{1,})', auth, bodyParser(), validateCategoryUpdate, updateCategory);
 router.del('/:categoryId([0-9]{1,})', auth, deleteCategory);
 
-// get all categories
+
+/** get all categories
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+*/
 async function getAllCategories(ctx) {
     try {
         let user = ctx.state.user; // current user
@@ -45,7 +62,10 @@ async function getAllCategories(ctx) {
     }
 }
 
-// get a single category
+/** get a single category by its id
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+*/
 async function getCategoryById(ctx) {
     try {
         let user = ctx.state.user; // current user
@@ -73,7 +93,10 @@ async function getCategoryById(ctx) {
     }
 }
 
-// create a new category
+/** create a new category in the database
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+*/
 async function createCategory(ctx) {
     try {
         let user = ctx.state.user; // current user
@@ -98,7 +121,10 @@ async function createCategory(ctx) {
     }
 }
 
-// update existing category
+/** update an existing category with the supplied fields
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+*/
 async function updateCategory(ctx) {
     try {
         let user = ctx.state.user; // current user
@@ -127,7 +153,10 @@ async function updateCategory(ctx) {
     }
 }
 
-// delete category
+/** delete a category
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+*/
 async function deleteCategory(ctx) {
     try {
         let user = ctx.state.user; // current user

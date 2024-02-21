@@ -1,3 +1,8 @@
+/**
+ * @file creates a Koa application and starts the server.
+ * @author Joseph
+ */
+
 const Koa = require('koa');
 const passport = require('koa-passport');
 
@@ -38,5 +43,4 @@ function startServer(port = 3000) {
     app.listen(port);
 }
 
-// Start the server
 startServer(); 

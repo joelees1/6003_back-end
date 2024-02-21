@@ -1,3 +1,18 @@
+/**
+ * @module routes/addresses
+ * @description API routes for managing addresses associated with a user, providing CRUD operations along with authorization enforcement.
+ * @requires koa-router
+ * @requires koa-bodyparser
+ * @requires models/addresses
+ * @requires controllers/auth
+ * @requires permissions/addresses
+ * @requires controllers/validation
+ * @see models/addresses for db operations
+ * @see controllers/auth for auth middleware
+ * @see permissions/addresses for permissions
+ * @see controllers/validation for validation functions
+ */
+
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
 const model = require('../models/addresses');
@@ -10,14 +25,18 @@ const {validateAddressUpdate} = require('../controllers/validation');
 
 const router = Router({prefix: '/api/v1/users/:id/address'});
 
-router.get('/', auth, getAll); // get all of a users addresses
+router.get('/', auth, getAllAddresses);
 router.post('/', bodyParser(), auth, validateAddress, createAddress);
-router.get('/:addressId([0-9]{1,})', auth, getById);
+router.get('/:addressId([0-9]{1,})', auth, getAddressById);
 router.put('/:addressId([0-9]{1,})', auth, bodyParser(), validateAddressUpdate, updateAddress);
 router.del('/:addressId([0-9]{1,})', auth, deleteAddress);
 
-// get all of a users addresses
-async function getAll(ctx) {
+
+/** get all addresses belonging to a user
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+ */
+async function getAllAddresses(ctx) {
     try {
         let id = parseInt(ctx.params.id) // url id
         let user = ctx.state.user; // current user
@@ -45,8 +64,11 @@ async function getAll(ctx) {
     }
 }
 
-// get a single address by its id belonging to a user
-async function getById(ctx) {
+/** get a single address by its id
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+ */
+async function getAddressById(ctx) {
     try {
         let id = parseInt(ctx.params.id) // url id
         let user = ctx.state.user; // current user
@@ -75,7 +97,10 @@ async function getById(ctx) {
     }
 }
 
-// create address
+/** create a new address in the database
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+*/
 async function createAddress(ctx) {
     try {
         let id = parseInt(ctx.params.id) // url id
@@ -111,7 +136,10 @@ async function createAddress(ctx) {
     }
 }
 
-// update address
+/** update an existing address with the supplied fields
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+*/
 async function updateAddress(ctx) {
     try {
         let user = ctx.state.user; // current user
@@ -143,7 +171,10 @@ async function updateAddress(ctx) {
     }
 }
 
-// delete address
+/** delete an existing address
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+*/
 async function deleteAddress(ctx) {
     try {
         let user = ctx.state.user;

@@ -1,6 +1,17 @@
 /** 
  * @module routes/special
  * @author Joseph
+ * @requires koa-router
+ * @requires koa-bodyparser
+ * @requires bcrypt
+ * @requires jsonwebtoken
+ * @requires controllers/auth
+ * @requires models/users
+ * @requires config
+ * @requires controllers/validation
+ * @see models/users for db operations
+ * @see controllers/auth for auth middleware
+ * @see controllers/validation for validation functions
 */
 
 const Router = require('koa-router');
@@ -11,6 +22,7 @@ const auth = require('../controllers/auth');
 const model = require('../models/users');
 const config = require('../config');
 
+// Import validation function
 const { validateLogin } = require('../controllers/validation');
 
 const router = Router({ prefix: '/api/v1' });
@@ -21,7 +33,7 @@ router.post('/login', bodyParser(), validateLogin, login);
 
 
 /** bcrypt verify password function 
- * @function verifyPassword
+ * @async
  * @param {Object} result - user object
  * @param {string} password - password
  * @returns {Promise} - Promise object represents the result of the comparison
@@ -30,28 +42,33 @@ const verifyPassword = async function (result, password) {
   return await bcrypt.compare(password, result.password);
 }
 
-/** public API route */
+/** public API route 
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+*/
 function publicAPI(ctx) {
   ctx.body = { message: 'PUBLIC PAGE: You requested a new message URI (root) of the shop API' }
 }
 
-/** private API route */
+/** private API route 
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+*/
 function privateAPI(ctx) {
   const user = ctx.state.user;
   const formattedDate = user.created_at.toLocaleString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
   ctx.body = { message: `Hello ${user.username}, user since the ${formattedDate}` }
 }
 
-/** login route */
+/** login route 
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object containing the json web token used in subsequent requests
+*/
 async function login(ctx) {
   const details = ctx.request.body;
 
   try {
-    /** Get user from database by username
-     * @function findByUsername
-     * @param {string} details.username - username
-     * @returns {Promise} - Promise object represents the user
-    */
+    // Find user by username
     const [result] = await model.findByUsername(details.username);
     const user = result[0];
 

@@ -1,17 +1,16 @@
-/**
- * This module contains a utility function to run an SQL query
+/** This module contains a utility function to run an SQL query
  * @module helpers/database
- * @author Joseph
  * @see models/* for database query functions
- * @exports run_query
+ * @requires mysql2/promise
+ * @requires config
+ * @requires uuid
 */
 
 const mysql = require('mysql2/promise');
 const info = require('../config');
 const { v4: uuidv4 } = require('uuid');
 
-/**
- * Run an SQL query against the DB, end the connection and return the result.
+/** Run an SQL query against the DB, end the connection and return the result.
  * @param {string} Query SQL query string in sqljs format
  * @param {array|number|string} values The values to inject in to the query string.
  * @returns {object} mysqljs results object containing indexable rows

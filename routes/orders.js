@@ -1,3 +1,20 @@
+/**
+ * @module routes/orders
+ * @description API routes for managing orders, providing CRUD operations along with authorization enforcement.
+ * @requires koa-router
+ * @requires koa-bodyparser
+ * @requires models/orders
+ * @requires models/products
+ * @requires models/addresses
+ * @requires controllers/auth
+ * @requires permissions/orders
+ * @requires controllers/validation
+ * @see models/orders for db operations
+ * @see controllers/auth for auth middleware
+ * @see permissions/orders for permissions
+ * @see controllers/validation for validation functions
+ */
+
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
 const model = require('../models/orders');
@@ -6,6 +23,7 @@ const addressModel = require('../models/addresses');
 const auth = require('../controllers/auth');
 const can = require('../permissions/orders');
 
+// Import validation functions
 const {validateOrder} = require('../controllers/validation');
 const {validateOrderUpdate} = require('../controllers/validation');
 
@@ -17,7 +35,11 @@ router.get('/:orderId([0-9]{1,})', auth, getOrderById);
 router.put('/:orderId([0-9]{1,})', auth, bodyParser(), validateOrderUpdate, updateOrder);
 router.del('/:orderId([0-9]{1,})', auth, deleteOrder);
 
-// get all orders
+
+/** get all orders
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+ */
 async function getAllOrders(ctx) {
     try {
         let user = ctx.state.user; // current user
@@ -45,7 +67,10 @@ async function getAllOrders(ctx) {
     }
 }
 
-// create a new order
+/** create a new order
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+*/
 async function createOrder(ctx) {
     try {
         let user = ctx.state.user; // current user
@@ -107,7 +132,10 @@ async function createOrder(ctx) {
     }
 }
 
-// get a single order
+/** get a single order by its id
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+*/
 async function getOrderById(ctx) {
     try {
         let user = ctx.state.user; // current user
@@ -135,7 +163,10 @@ async function getOrderById(ctx) {
     }
 }
 
-// update existing order
+/** update an existing order with the supplied fields 
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+*/
 async function updateOrder(ctx) {
     try {
         let user = ctx.state.user; // current user
@@ -166,7 +197,10 @@ async function updateOrder(ctx) {
     }
 }
 
-// delete order
+/** delete an existing order
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+*/
 async function deleteOrder(ctx) {
     try {
         let user = ctx.state.user; // current user

@@ -1,9 +1,27 @@
+/**
+ * @module routes/products
+ * @description API routes for managing products, providing CRUD operations along with authorization enforcement.
+ * @requires koa-router
+ * @requires koa-bodyparser
+ * @requires models/products
+ * @requires models/products
+ * @requires models/addresses
+ * @requires controllers/auth
+ * @requires permissions/products
+ * @requires controllers/validation
+ * @see models/products for db operations
+ * @see controllers/auth for auth middleware
+ * @see permissions/products for permissions
+ * @see controllers/validation for validation functions
+ */
+
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
 const model = require('../models/products');
 const auth = require('../controllers/auth');
 const can = require('../permissions/products');
 
+// Import validation functions
 const {validateProduct} = require('../controllers/validation');
 const {validateProductUpdate} = require('../controllers/validation');
 
@@ -15,7 +33,11 @@ router.get('/:productId([0-9]{1,})', getProductById); // no auth
 router.put('/:productId([0-9]{1,})', auth, bodyParser(), validateProductUpdate, updateProduct);
 router.del('/:productId([0-9]{1,})', auth, deleteProduct);
 
-// get all products
+
+/** get all products
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+ */
 async function getAllProducts(ctx) {
     try {
         const page = parseInt(ctx.query.page, 10) || 1; // defaults are 1 and 10
@@ -40,7 +62,10 @@ async function getAllProducts(ctx) {
     }
 }
 
-// get a single product
+/** get a single product by its id
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+ */
 async function getProductById(ctx) {
     try {
         let productId = parseInt(ctx.params.productId) // url id
@@ -62,7 +87,10 @@ async function getProductById(ctx) {
     }
 }
 
-// create product
+/** create a new product
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+ */
 async function createProduct(ctx) {
     try {
         let user = ctx.state.user; // current user
@@ -88,7 +116,10 @@ async function createProduct(ctx) {
     }
 }
 
-// update product
+/** update an existing product with the supplied fields
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+ */
 async function updateProduct(ctx) {
     try {
         let user = ctx.state.user; // current user
@@ -117,7 +148,10 @@ async function updateProduct(ctx) {
     }
 }
 
-// delete product
+/** delete an existing product
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object
+ */
 async function deleteProduct(ctx) {
     try {
         let user = ctx.state.user;
