@@ -3,6 +3,7 @@
  * @description API routes for managing users, providing CRUD operations along with authorization enforcement.
  * @requires koa-router
  * @requires koa-bodyparser
+ * @requires bcrypt
  * @requires models/users
  * @requires models/products
  * @requires models/addresses
@@ -141,9 +142,9 @@ async function updateUser(ctx) {
             return;
         }
 
-        // filter the body using the permissions
-        // if a field is not allowed to be updated, it will be removed
-        // as admins and users can update different fields
+        /* filter the body using the permissions
+         if a field is not allowed to be updated, it will be removed
+         as admins and users can update different fields */
         let body = permission.filter(ctx.request.body);
 
         // hash the password if it is updated

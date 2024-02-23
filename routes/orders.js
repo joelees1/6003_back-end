@@ -75,9 +75,10 @@ async function createOrder(ctx) {
     try {
         let user = ctx.state.user; // current user
 
-        const permission = can.create(user); // check permissions
+        // check permissions
+        const permission = can.create(user);
         if (!permission.granted) {
-            ctx.status = 403;
+            ctx.status = 403; // forbidden
             return;
         }
 
@@ -92,7 +93,7 @@ async function createOrder(ctx) {
         } 
 
         // check if product is already sold
-        else if (product[0].sold) {
+        if (product[0].sold) {
             ctx.status = 400; // bad request
             ctx.body = { error: 'Product has already sold' };
             return;
@@ -110,7 +111,7 @@ async function createOrder(ctx) {
         order.user_id = user.id; // set user id
         order.address_id = address[0].id; // set address id
 
-        // no need to filter body as only admins can post
+        // add order to db
         const [result] = await model.add(order);
 
         if (result) {

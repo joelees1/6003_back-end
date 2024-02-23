@@ -1,6 +1,7 @@
 /**
  * @file creates a Koa application and starts the server.
  * @author Joseph
+ * @namespace index
  */
 
 const Koa = require('koa');
@@ -15,6 +16,7 @@ const orders = require('./routes/orders.js');
 
 /** Initializes and configures a Koa application instance.
  * @function createApp
+ * @memberof index
  * @returns {Koa} The configured Koa application object.
  */
 function createApp() {
@@ -36,6 +38,7 @@ function createApp() {
 
 /** Starts the Koa server on a specified port.
  * @function startServer
+ * @memberof index
  * @param {number} [port=3000] - The port to listen on.
  */
 function startServer(port = 3000) {
