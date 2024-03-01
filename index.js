@@ -6,6 +6,7 @@
 
 const Koa = require('koa');
 const passport = require('koa-passport');
+const cors = require('@koa/cors');
 
 const special = require('./routes/special.js')
 const users = require('./routes/users.js');
@@ -21,6 +22,7 @@ const orders = require('./routes/orders.js');
  */
 function createApp() {
     const app = new Koa();
+    app.use(cors()); // enable CORS
 
     // configure passport
     app.use(passport.initialize()); 
@@ -41,7 +43,7 @@ function createApp() {
  * @memberof index
  * @param {number} [port=3000] - The port to listen on.
  */
-function startServer(port = 3000) {
+function startServer(port = 3030) {
     const app = createApp();
     app.listen(port);
 }
