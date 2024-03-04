@@ -35,8 +35,9 @@ const koaBody = require('koa-body')({
 // Import validation functions
 const {validateProduct} = require('../controllers/validation');
 const {validateProductUpdate} = require('../controllers/validation');
+const prefix = '/api/v1/products';
+const router = Router({prefix: prefix});
 
-const router = Router({prefix: '/api/v1/products'});
 
 router.get('/', getAllProducts); // no auth
 router.post('/', koaBody, validateProduct, createProduct); // auth
@@ -59,12 +60,17 @@ async function getAllProducts(ctx) {
 
         const [products] = await model.getAll(); //page, limit, order, category
 
-        // If products are found, return them
         if (products.length) {
             // extract only the product fields needed for the home page
             const body = products.map(product => {
                 const { id, name, description, creator, sold, category_id } = product;
-                return { id, name, description, creator, sold, category_id };
+                //const links = { self: `/products/${id}`, image: `/products/${id}/image` };
+                const links = { 
+                    self: `${ctx.protocol}://${ctx.host}${prefix}/${id}`,
+                    image: `${ctx.protocol}://${ctx.host}${prefix}/${id}/image`
+                };
+
+                return { id, name, description, creator, sold, category_id, links };
             });
             ctx.body = body;
             ctx.status = 200;
@@ -90,6 +96,11 @@ async function getProductById(ctx) {
 
         // If a product is found, return it
         if (product.length) {
+            // add links to the response
+            product[0].links = {
+                self: `${ctx.protocol}://${ctx.host}${prefix}/${productId}`,
+                image: `${ctx.protocol}://${ctx.host}${prefix}/${productId}/image`
+            };
             ctx.body = product[0];
             ctx.status = 200;
         } else {
@@ -165,8 +176,7 @@ async function createProduct(ctx) {
         let [result] = await model.add(body); // create the product
         if (result) {
             ctx.status = 201;
-            ctx.body = {ID: result.insertId, link: `/api/v1/products/${result.insertId}`};
-            // ctx.body = {ID: result.insertId, link: { path: 'get_image', imageName}};
+            ctx.body = {ID: result.insertId, link: `/products/${result.insertId}`};
         }
     } catch (error) {
         console.error(error.code);
@@ -196,7 +206,7 @@ async function updateProduct(ctx) {
 
         if (result.affectedRows) { // If product is updated successfully
             ctx.status = 200;
-            ctx.body = {ID: productId}
+            ctx.body = {id: productId}
         } else {
             ctx.status = 404;
             ctx.body = { error: 'Product not found' };

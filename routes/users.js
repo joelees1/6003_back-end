@@ -28,7 +28,8 @@ const can = require('../permissions/users');
 const { validateUser } = require('../controllers/validation');
 const { validateUserUpdate } = require('../controllers/validation');
 
-const router = Router({ prefix: '/api/v1/users' });
+const prefix = '/api/v1/users';
+const router = Router({prefix: prefix});
 
 router.get('/', auth, getAll);
 router.post('/', bodyParser(), validateUser, createUser);
@@ -55,7 +56,16 @@ async function getAll(ctx) {
 
         // If users are found, return them
         if (users.length) {
-            ctx.body = users;
+            // add links to the response
+            users.forEach(user => {
+                user.links = {
+                    self: `/users/${user.id}`,
+                    address: `/users/${user.id}/address`
+                };
+            });
+
+            // filter the users using the permissions to not return password
+            ctx.body = users.map(user => permission.filter(user));
             ctx.status = 200;
         } else {
             ctx.status = 404;
@@ -66,7 +76,7 @@ async function getAll(ctx) {
         ctx.status = 500;
         ctx.body = { error: 'Failed to retrieve users' };
     }
-} 
+}
 
 /** get a single user by its id
  * @param {object} ctx - The Koa request context object
@@ -88,6 +98,10 @@ async function getById(ctx) {
 
         // If an user is found
         if (user.length) {
+            // add links to the response
+            user[0].links = {
+                address: `/users/${user[0].id}/address`
+            };
             ctx.body = permission.filter(user[0]); // filter the user using the permissions to not return certain fields
             ctx.status = 200;
         } else {

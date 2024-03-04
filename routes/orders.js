@@ -123,7 +123,7 @@ async function createOrder(ctx) {
             }
             ctx.status = 201; // created
             order.id = result.insertId;
-            ctx.body = {Order: order, link: `/api/v1/orders/${result.insertId}`}; // send back order information
+            ctx.body = {Order: order, link: `/orders/${result.insertId}`}; // send back order information
         }
     } catch (error) {
         console.error(error);
