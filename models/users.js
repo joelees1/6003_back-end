@@ -25,20 +25,10 @@ exports.findByUsername = async function getByUsername (username) {
  * @param {string} order - order by column
  * @returns {Promise} - Promise object represents the users (data)
  */
-exports.getAll = async function getAllUsers (page, limit, order) {
+exports.getAll = async function getAllUsers () {
     // get all rows from the users table, without password
     let query = "SELECT * FROM users";
-    let values = [];
-
-    if (order) {
-        query += ` ORDER BY ${order}`;
-    }
-    if (page && limit) {
-        query += " LIMIT ? OFFSET ?";
-        values = [limit, (page - 1) * limit];
-    }
-    
-    const data = await db.run_query(query, values);
+    const data = await db.run_query(query);
     return data;
 }
 

@@ -34,6 +34,7 @@ async function validate(ctx, next, schema) {
         v.validate(body, schema, validationOptions);
         await next();
     } catch (error) {
+        console.error(error);
         if (error instanceof ValidationError) {
             const errorMessage = {
                 message: 'Validation Error',

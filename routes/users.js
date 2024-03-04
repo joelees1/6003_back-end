@@ -20,6 +20,7 @@ const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
 const bcrypt = require('bcrypt');
 const model = require('../models/users');
+const addressModel = require('../models/addresses');
 const auth = require('../controllers/auth');
 const can = require('../permissions/users');
 
@@ -30,9 +31,9 @@ const { validateUserUpdate } = require('../controllers/validation');
 const router = Router({ prefix: '/api/v1/users' });
 
 router.get('/', auth, getAll);
-router.post('/', bodyParser(), validateUser, createUser); // no auth
+router.post('/', bodyParser(), validateUser, createUser);
 router.get('/:id([0-9]{1,})', auth, getById);
-router.put('/:id([0-9]{1,})', auth, bodyParser(), validateUserUpdate, updateUser);
+router.put('/:id([0-9]{1,})', bodyParser(), auth, validateUserUpdate, updateUser);
 router.del('/:id([0-9]{1,})', auth, deleteUser);
 
 
@@ -42,18 +43,15 @@ router.del('/:id([0-9]{1,})', auth, deleteUser);
  */
 async function getAll(ctx) {
     try {
-        const page = parseInt(ctx.query.page, 10) || 1; // defaults are 1 and 10
-        const limit = parseInt(ctx.query.limit, 10) || 10;
-        const order = ctx.query.order;
-
         // Only admins
         const permission = can.readAll(ctx.state.user);
         if (!permission.granted) {
             ctx.status = 403; // Forbidden
+            ctx.body = { error: 'Permission denied' };
             return;
         }
 
-        const [users] = await model.getAll(page, limit, order);
+        const [users] = await model.getAll();
 
         // If users are found, return them
         if (users.length) {
@@ -68,7 +66,7 @@ async function getAll(ctx) {
         ctx.status = 500;
         ctx.body = { error: 'Failed to retrieve users' };
     }
-}
+} 
 
 /** get a single user by its id
  * @param {object} ctx - The Koa request context object
@@ -82,6 +80,7 @@ async function getById(ctx) {
         const permission = can.read(ctx.state.user, id);
         if (!permission.granted) {
             ctx.status = 403; // Forbidden
+            ctx.body = { error: 'Permission denied' };
             return;
         }
 
@@ -89,7 +88,7 @@ async function getById(ctx) {
 
         // If an user is found
         if (user.length) {
-            ctx.body = permission.filter(user[0]); // filter the user using the permissions
+            ctx.body = permission.filter(user[0]); // filter the user using the permissions to not return certain fields
             ctx.status = 200;
         } else {
             ctx.status = 404;
@@ -118,11 +117,18 @@ async function createUser(ctx) {
             ctx.status = 201; // 201 Created
             ctx.body = { ID: result.insertId, link: `/api/v1/users/${result.insertId}` };
         }
-    } catch (error) {
+    } 
+    catch (error) {
         console.error(error.code);
         console.error(error);
-        ctx.status = 500;
-        ctx.body = { error: 'Failed to create the user' };
+
+        if (error.code === 'ER_DUP_ENTRY') {
+            ctx.status = 400; // duplicate entry
+            ctx.body = { error: 'Username or Email already exists' };
+        } else {
+            ctx.status = 500;
+            ctx.body = { error: 'Failed to create the user' };
+        }
     }
 }
 
@@ -139,6 +145,7 @@ async function updateUser(ctx) {
         const permission = can.update(user, id);
         if (!permission.granted) {
             ctx.status = 403;
+            ctx.body = { error: 'Permission denied' };
             return;
         }
 
@@ -169,7 +176,7 @@ async function updateUser(ctx) {
     }
 }
 
-/** delete an existing user
+/** delete an existing user, must delete related address
  * @param {object} ctx - The Koa request context object
  * @returns {object} - The Koa response object
  */
@@ -182,13 +189,21 @@ async function deleteUser(ctx) {
         const permission = can.delete(user, id);
         if (!permission.granted) {
             ctx.status = 403;
+            ctx.body = { error: 'Permission denied' };
             return;
+        }
+
+        // delete related addresses to prevent foreign key constraint error
+        let [address] = await addressModel.getAll(id);
+        if (address.length) {
+            let [addressResult] = await addressModel.delete(address[0].id, id); // pass the address id and user id
         }
 
         // delete the user
         let [result] = await model.delete(id);
         if (result.affectedRows) {
             ctx.status = 204; // 204 No Content
+            ctx.body = { message: 'User deleted' };
         } else {
             ctx.status = 404;
             ctx.body = { error: 'User not found' };

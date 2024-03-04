@@ -17,9 +17,20 @@
 
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
+const mime = require('mime-types');
+const { copyFileSync, existsSync, createReadStream, unlinkSync } = require('fs');
+const { v4: uuidv4 } = require('uuid');
 const model = require('../models/products');
 const auth = require('../controllers/auth');
 const can = require('../permissions/products');
+
+const path = require('path'); 
+const uploadsDir = path.join(__dirname, '..', 'uploads'); // Absolute path
+const imageDir = path.join(__dirname, '..', 'productImages'); // Absolute path
+const koaBody = require('koa-body')({
+    multipart: true,
+    formidable: { uploadsDir}
+});
 
 // Import validation functions
 const {validateProduct} = require('../controllers/validation');
@@ -28,10 +39,11 @@ const {validateProductUpdate} = require('../controllers/validation');
 const router = Router({prefix: '/api/v1/products'});
 
 router.get('/', getAllProducts); // no auth
-router.post('/', bodyParser(), auth, validateProduct, createProduct);
+router.post('/', koaBody, validateProduct, createProduct); // auth
 router.get('/:productId([0-9]{1,})', getProductById); // no auth
-router.put('/:productId([0-9]{1,})', auth, bodyParser(), validateProductUpdate, updateProduct);
-router.del('/:productId([0-9]{1,})', auth, deleteProduct);
+router.get('/:productId([0-9]{1,})/image', getProductImageById); // no auth
+router.put('/:productId([0-9]{1,})', bodyParser(), validateProductUpdate, updateProduct); // auth
+router.del('/:productId([0-9]{1,})', deleteProduct); // auth
 
 
 /** get all products
@@ -40,16 +52,21 @@ router.del('/:productId([0-9]{1,})', auth, deleteProduct);
  */
 async function getAllProducts(ctx) {
     try {
-        const page = parseInt(ctx.query.page, 10) || 1; // defaults are 1 and 10
-        const limit = parseInt(ctx.query.limit, 10) || 10;
-        const order = ctx.query.order;
-        const category = parseInt(ctx.query.category); // category filter
+        //const page = parseInt(ctx.query.page, 10) || 1; // defaults are 1 and 10
+        //const limit = parseInt(ctx.query.limit, 10) || 12;
+        //const order = ctx.query.order;
+        //const category = parseInt(ctx.query.category); // category filter
 
-        const [products] = await model.getAll(page, limit, order, category);
+        const [products] = await model.getAll(); //page, limit, order, category
 
         // If products are found, return them
         if (products.length) {
-            ctx.body = products;
+            // extract only the product fields needed for the home page
+            const body = products.map(product => {
+                const { id, name, description, creator, sold, category_id } = product;
+                return { id, name, description, creator, sold, category_id };
+            });
+            ctx.body = body;
             ctx.status = 200;
         } else {
             ctx.status = 404;
@@ -64,12 +81,11 @@ async function getAllProducts(ctx) {
 
 /** get a single product by its id
  * @param {object} ctx - The Koa request context object
- * @returns {object} - The Koa response object
+ * @returns {object} - The Koa response object with the product details
  */
 async function getProductById(ctx) {
     try {
         let productId = parseInt(ctx.params.productId) // url id
-        
         let [product] = await model.getById(productId);
 
         // If a product is found, return it
@@ -87,26 +103,70 @@ async function getProductById(ctx) {
     }
 }
 
+/** get a products image by id 
+ * @param {object} ctx - The Koa request context object
+ * @returns {object} - The Koa response object with the image
+*/
+async function getProductImageById(ctx) {
+    const productId = parseInt(ctx.params.productId);
+    let [product] = await model.getById(productId);
+
+    if (product.length) {
+        const imagePath = product[0].image_url;
+        if (existsSync(imagePath)) {
+            ctx.type = 'image/png'; // Or the appropriate image type
+            ctx.body = createReadStream(imagePath);
+            ctx.status = 200;
+        } else {
+            ctx.status = 404;
+            ctx.body = { error: 'Image not found' };
+        } 
+    } else { 
+        ctx.status = 404;
+        ctx.body = { error: 'Product not found' };
+    }
+}
+
 /** create a new product
  * @param {object} ctx - The Koa request context object
  * @returns {object} - The Koa response object
  */
 async function createProduct(ctx) {
     try {
-        let user = ctx.state.user; // current user
-
+        //let user = ctx.state.user; // current user
         const permission = can.create(user);
         if (!permission.granted) {
             ctx.status = 403; // Forbidden
             return;
         }
 
+        // image upload
+        const { path, name, type } = ctx.request.files.image_url;
+        const extension = mime.extension(type);
+
+        console.log('Uploaded file details:')
+        console.log(`path: ${path}`);
+        console.log(`filename: ${name}`);
+        console.log(`type: ${type}`);
+        console.log(`extension: ${extension}`);
+
+        const imageName = uuidv4()
+        const newPath = `${imageDir}/${imageName}`; // .${extension}
+        copyFileSync(path, newPath);
+
+        // get the product details from the body
         const body = ctx.request.body;
+        body.image_url = newPath;
+
+        // make price and category integers
+        body.price = parseInt(body.price);
+        body.category_id = parseInt(body.category_id);
 
         let [result] = await model.add(body); // create the product
         if (result) {
             ctx.status = 201;
             ctx.body = {ID: result.insertId, link: `/api/v1/products/${result.insertId}`};
+            // ctx.body = {ID: result.insertId, link: { path: 'get_image', imageName}};
         }
     } catch (error) {
         console.error(error.code);
@@ -163,10 +223,23 @@ async function deleteProduct(ctx) {
             return;
         }
 
+        // delete product image and then from the db
+        let [product] = await model.getById(productId);
+        if (!product.length) {
+            ctx.status = 404;
+            ctx.body = { error: 'Product not found' };
+            return;
+        }
+        const imagePath = product[0].image_url;
+
         let [result] = await model.delete(productId);
-        
         if (result.affectedRows) {
             ctx.status = 204; // 204 No Content
+            if (existsSync(imagePath)) {
+                console.log('deleting image');
+                // delete image
+                unlinkSync(imagePath);
+            }
         } else {
             ctx.status = 404;
             ctx.body = { error: 'Product not found' };

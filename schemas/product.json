@@ -24,12 +24,10 @@
                 },
                 "price": {
                     "description": "Price of the product",
-                    "type": "number",
                     "minimum": 0
                 },
                 "category_id": {
-                    "description": "Category of the product",
-                    "type": "number"
+                    "description": "Category of the product"
                 },
                 "image_url": {
                     "description": "Image url of the product",
@@ -84,7 +82,8 @@
                 },
                 "sold": {
                     "description": "Sold status of the product",
-                    "type": "boolean"
+                    "type": "number",
+                    "enum": [0, 1]
                 },
                 "category_id": {
                     "description": "Category of the product",

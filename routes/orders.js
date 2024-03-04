@@ -30,9 +30,9 @@ const {validateOrderUpdate} = require('../controllers/validation');
 const router = Router({prefix: '/api/v1/orders'});
 
 router.get('/', auth, getAllOrders);
-router.post('/', auth, bodyParser(), validateOrder, createOrder);
+router.post('/', bodyParser(), auth, validateOrder, createOrder); 
 router.get('/:orderId([0-9]{1,})', auth, getOrderById);
-router.put('/:orderId([0-9]{1,})', auth, bodyParser(), validateOrderUpdate, updateOrder);
+router.put('/:orderId([0-9]{1,})', bodyParser(), auth, validateOrderUpdate, updateOrder);
 router.del('/:orderId([0-9]{1,})', auth, deleteOrder);
 
 
@@ -46,7 +46,6 @@ async function getAllOrders(ctx) {
         let orders;
 
         const permission = can.read(user);
-        
         if (!permission.granted) { // user gets their own orders
             [orders] = await model.getAll(user.id);
         } else if (permission.granted){ // admin gets all orders
@@ -182,7 +181,6 @@ async function updateOrder(ctx) {
         const order = ctx.request.body;
 
         let [result] = await model.update(orderId, order);
-        console.log(result);
 
         if (result.affectedRows) {
             ctx.status = 200;

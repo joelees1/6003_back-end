@@ -28,7 +28,7 @@ ac.grant('user')
  * Doesn't allow admin to delete themselves.
 */
 ac.grant('admin')
-    .execute('read').on('user')
+    .execute('read').on('user', ['*', '!password'])
     .execute('read').on('users')
     .execute('update').on('user')
     .condition({ Fn: 'NOT_EQUALS', args: { 'requester': '$.owner' } }).execute('delete').on('user'); // delete any user but themself

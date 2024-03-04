@@ -32,7 +32,7 @@ router.put('/:addressId([0-9]{1,})', auth, bodyParser(), validateAddressUpdate, 
 router.del('/:addressId([0-9]{1,})', auth, deleteAddress);
 
 
-/** get all addresses belonging to a user
+/** get the addresses belonging to a user passed in the url
  * @param {object} ctx - The Koa request context object
  * @returns {object} - The Koa response object
  */
@@ -44,6 +44,7 @@ async function getAllAddresses(ctx) {
         const permission = can.read(user, id);
         if (!permission.granted) {
             ctx.status = 403; // Forbidden
+            ctx.body = { error: 'Permission denied' };
             return;
         }
 
@@ -51,7 +52,7 @@ async function getAllAddresses(ctx) {
         
         // If addresses are found, return them
         if (addresses.length) {
-            ctx.body = addresses;
+            ctx.body = addresses[0];
             ctx.status = 200;
         } else {
             ctx.status = 404;
@@ -75,7 +76,8 @@ async function getAddressById(ctx) {
 
         const permission = can.read(user, id);
         if (!permission.granted) {
-            ctx.status = 403; // Forbidden
+            ctx.status = 403;
+            ctx.body = { error: 'Permission denied' };
             return;
         }
         
@@ -108,7 +110,8 @@ async function createAddress(ctx) {
 
         const permission = can.create(user, id);
         if (!permission.granted) {
-            ctx.status = 403; // Forbidden
+            ctx.status = 403;
+            ctx.body = { error: 'Permission denied' };
             return;
         }
 
@@ -148,7 +151,8 @@ async function updateAddress(ctx) {
 
         const permission = can.update(user, id);
         if (!permission.granted) {
-            ctx.status = 403; // Forbidden
+            ctx.status = 403;
+            ctx.body = { error: 'Permission denied' };
             return;
         }
 
@@ -183,7 +187,8 @@ async function deleteAddress(ctx) {
 
         const permission = can.delete(user, id);
         if (!permission.granted) {
-            ctx.status = 403; // Forbidden
+            ctx.status = 403;
+            ctx.body = { error: 'Permission denied' };
             return;
         }
 
@@ -197,7 +202,7 @@ async function deleteAddress(ctx) {
     } catch (error) {
         console.error(error);
         ctx.status = 500; // Internal Server Error
-        ctx.body = { error: 'Failed to delete address' };
+        ctx.body = { error: 'Failed to delete address, check orders associated with address' };
     }
 }
 

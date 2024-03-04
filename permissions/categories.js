@@ -11,7 +11,7 @@ const AccessControl = require('role-acl');
 const ac = new AccessControl();
 
 /** User Permissions
- * Grants 'user' role permissions to readNone categories (no permissions).
+ * Grants 'user' fake permissions to readNone categories (no permissions).
  * Allows actions: 'readNone'.
  * Denies actions: 'create', 'update', 'delete'.
  */

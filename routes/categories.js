@@ -26,9 +26,9 @@ const {validateCategoryUpdate} = require('../controllers/validation');
 const router = Router({prefix: '/api/v1/categories'});
 
 router.get('/', auth, getAllCategories);
-router.post('/', auth, bodyParser(), validateCategory, createCategory);
+router.post('/', bodyParser(), auth, validateCategory, createCategory);
 router.get('/:categoryId([0-9]{1,})', auth, getCategoryById);
-router.put('/:categoryId([0-9]{1,})', auth, bodyParser(), validateCategoryUpdate, updateCategory);
+router.put('/:categoryId([0-9]{1,})', bodyParser(), auth, validateCategoryUpdate, updateCategory);
 router.del('/:categoryId([0-9]{1,})', auth, deleteCategory);
 
 
@@ -43,6 +43,7 @@ async function getAllCategories(ctx) {
         const permission = can.read(user);
         if (!permission.granted) {
             ctx.status = 403;
+            ctx.body = { error: 'Permission denied' };
             return;
         }
 
@@ -104,6 +105,7 @@ async function createCategory(ctx) {
         const permission = can.create(user);
         if (!permission.granted) {
             ctx.status = 403;
+            ctx.body = { error: 'Permission denied' };
             return;
         }
 
@@ -133,6 +135,7 @@ async function updateCategory(ctx) {
         const permission = can.update(user);
         if (!permission.granted) {
             ctx.status = 403;
+            ctx.body = { error: 'Permission denied' };
             return;
         }
 
@@ -165,6 +168,7 @@ async function deleteCategory(ctx) {
         const permission = can.delete(user);
         if (!permission.granted) {
             ctx.status = 403;
+            ctx.body = { error: 'Permission denied' };
             return;
         }
 

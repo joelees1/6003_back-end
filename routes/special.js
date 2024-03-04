@@ -28,8 +28,7 @@ const { validateLogin } = require('../controllers/validation');
 const router = Router({ prefix: '/api/v1' });
 
 router.get('/', publicAPI);
-router.get('/private', auth, privateAPI);
-router.post('/login', bodyParser(), validateLogin, login);
+router.post('/login', bodyParser(), login);
 
 
 /** bcrypt verify password function 
@@ -39,7 +38,7 @@ router.post('/login', bodyParser(), validateLogin, login);
  * @returns {Promise} - Promise object represents the result of the comparison
 */
 const verifyPassword = async function (result, password) {
-  return await bcrypt.compare(password, result.password);
+	return await bcrypt.compare(password, result.password);
 }
 
 /** public API route 
@@ -47,17 +46,7 @@ const verifyPassword = async function (result, password) {
  * @returns {object} - The Koa response object
 */
 function publicAPI(ctx) {
-  ctx.body = { message: 'PUBLIC PAGE: You requested a new message URI (root) of the shop API' }
-}
-
-/** private API route 
- * @param {object} ctx - The Koa request context object
- * @returns {object} - The Koa response object
-*/
-function privateAPI(ctx) {
-  const user = ctx.state.user;
-  const formattedDate = user.created_at.toLocaleString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
-  ctx.body = { message: `Hello ${user.username}, user since the ${formattedDate}` }
+	ctx.body = { message: 'PUBLIC PAGE: You requested a new message URI (root) of the shop API' }
 }
 
 /** login route 
@@ -65,36 +54,47 @@ function privateAPI(ctx) {
  * @returns {object} - The Koa response object containing the json web token used in subsequent requests
 */
 async function login(ctx) {
-  const details = ctx.request.body;
+	// get details from btoa encoded string in the header
+	console.log('Authorization header:', ctx.headers.authorization);
+	const encoded = ctx.headers.authorization.split(' ')[1];
+	const decoded = Buffer.from(encoded, 'base64').toString('utf-8');
+	const [username, password] = decoded.split(':'); // Split into username and password directly
+	const details = { username, password };
+	console.log('Login details:', details);
 
-  try {
-    // Find user by username
-    const [result] = await model.findByUsername(details.username);
-    const user = result[0];
+	try {
+		// Find user by username
+		const [result] = await model.findByUsername(details.username);
+		const user = result[0];
 
-    // Check if user exists and password is correct
-    if (!user || user.length === 0 || !(await verifyPassword(user, details.password))) {
-      ctx.status = 401; // Unauthorized
-      ctx.body = { error: 'Invalid username or password' };
-      return;
-    }
+		// Check if user exists and password is correct
+		if (!user || user.length === 0 || !(await verifyPassword(user, details.password))) {
+			ctx.status = 401; // Unauthorized
+			ctx.body = { error: 'Invalid username or password' };
+			return;
+		}
 
-    /** Create json web token
-     * @function sign
-     * @param {Object} user - user object
-     * @param {string} config.jwtSecret - jwt secret
-     * @param {Object} expiresIn - expiration time
-     * @returns {string} - token
-    */
-    const token = jwt.sign(user, config.jwtSecret, { expiresIn: '100d' });
-    ctx.body = { token }; // Send token in response
-    ctx.status = 200; // OK
+		/** Create json web token
+		 * @function sign
+		 * @param {Object} user - user object
+		 * @param {string} config.jwtSecret - jwt secret
+		 * @param {Object} expiresIn - expiration time
+		 * @returns {string} - token
+		*/
+		const token = jwt.sign(user, config.jwtSecret, { expiresIn: '100d' });
+		const { id, username, email, role } = user;
+		const links = {
+			self: `/users/${id}`
+		};
+		ctx.body = { id, username, email, role, token, links };
+		ctx.status = 200; // OK
 
-  } catch (error) {
-    console.error('Error during login:', error);
-    ctx.status = 500;
-    ctx.body = { error: 'Internal server error' };
-  }
+	} catch (error) {
+		console.error('Error during login:', error);
+		ctx.status = 500;
+		ctx.body = { error: 'Internal server error' };
+	}
 }
+  
 
 module.exports = router;
