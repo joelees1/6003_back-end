@@ -40,11 +40,11 @@ const router = Router({prefix: prefix});
 
 
 router.get('/', getAllProducts); // no auth
-router.post('/', koaBody, validateProduct, createProduct); // auth
+router.post('/', koaBody, auth, validateProduct, createProduct); // auth
 router.get('/:productId([0-9]{1,})', getProductById); // no auth
 router.get('/:productId([0-9]{1,})/image', getProductImageById); // no auth
-router.put('/:productId([0-9]{1,})', bodyParser(), validateProductUpdate, updateProduct); // auth
-router.del('/:productId([0-9]{1,})', deleteProduct); // auth
+router.put('/:productId([0-9]{1,})', auth, bodyParser(), validateProductUpdate, updateProduct); // auth
+router.del('/:productId([0-9]{1,})', auth, deleteProduct); // auth
 
 
 /** get all products
@@ -193,11 +193,14 @@ async function createProduct(ctx) {
 async function updateProduct(ctx) {
     try {
         let user = ctx.state.user; // current user
+        console.log(user);
         const productId = ctx.params.productId;
 
         const permission = can.update(user);
+        console.log(permission);
         if (!permission.granted) {
             ctx.status = 403; // Forbidden
+            ctx.body = { error: 'Permission denied' };
             return;
         }
 

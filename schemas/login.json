@@ -25,9 +25,37 @@
             "description": "Confirmation of login",
             "type": "object",
             "properties": {
+                "id": {
+                    "description": "user id",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "username",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "email",
+                    "type": "string"
+                },
+                "role": {
+                    "description": "user role",
+                    "type": "string"
+                },
                 "token": {
                     "description": "jwt token",
                     "type": "string"
+                },
+                "links": {
+                    "description": "links",
+                    "type": "object",
+                    "properties": {
+                        "self": {
+                            "description": "self",
+                            "type": "string"
+                        }
+                    },
+                    "required": ["self"],
+                    "additionalProperties": false
                 }
             }            
         }

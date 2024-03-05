@@ -81,7 +81,7 @@ async function login(ctx) {
 		 * @param {Object} expiresIn - expiration time
 		 * @returns {string} - token
 		*/
-		const token = jwt.sign(user, config.jwtSecret, { expiresIn: '100d' });
+		const token = jwt.sign(user, config.jwtSecret, { expiresIn: '1h' });
 		const { id, username, email, role } = user;
 		const links = {
 			self: `/users/${id}`

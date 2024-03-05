@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   version: 1.0.0
   title: Back End Coursework API
-  description: A simple e-commerce API.
+  description: This project provides the backend API for an online art e-commerce website. It enables core functionalities including secure user registration and login, product browsing and filtering, order placement, and address management.  The API facilitates a seamless user experience for purchasing art online. Additionally, it  provides administrative tools for easy management of users, products, categories, and orders. The backend is built using Node.js, Koa, and a MySQL database.
   contact:
     name: Joseph Lees
     email: leesj4@coventry.ac.uk

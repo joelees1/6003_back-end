@@ -25,7 +25,7 @@ const {validateCategoryUpdate} = require('../controllers/validation');
 
 const router = Router({prefix: '/api/v1/categories'});
 
-router.get('/', auth, getAllCategories);
+router.get('/', getAllCategories); // no auth for filering
 router.post('/', bodyParser(), auth, validateCategory, createCategory);
 router.get('/:categoryId([0-9]{1,})', auth, getCategoryById);
 router.put('/:categoryId([0-9]{1,})', bodyParser(), auth, validateCategoryUpdate, updateCategory);
@@ -40,12 +40,12 @@ async function getAllCategories(ctx) {
     try {
         let user = ctx.state.user; // current user
 
-        const permission = can.read(user);
+        /*const permission = can.read(user);
         if (!permission.granted) {
             ctx.status = 403;
             ctx.body = { error: 'Permission denied' };
             return;
-        }
+        }*/
 
         const [categories] = await model.getAll();
 
