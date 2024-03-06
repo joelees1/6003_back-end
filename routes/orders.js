@@ -87,6 +87,7 @@ async function createOrder(ctx) {
         const [product] = await productModel.getById(order.product_id); // check if product exists
         if (!product.length) {
             ctx.status = 404;
+            console.log('Product not found');
             ctx.body = { error: 'Product not found' };
             return;
         } 
@@ -102,6 +103,7 @@ async function createOrder(ctx) {
         const [address] = await addressModel.getAll(user.id);
         if (!address.length) {
             ctx.status = 404;
+            console.log('Address not found');
             ctx.body = { error: 'Address not found' };
             return;
         }
@@ -142,20 +144,21 @@ async function getOrderById(ctx) {
         const orderId = parseInt(ctx.params.orderId);
         let [order] = await model.getById(orderId);
 
+        if (!order.length) {
+            ctx.status = 404;
+            ctx.body = { error: 'Order not found' };
+            return;
+        }
+
         // only allow users to read their own orders
         const permission = can.read(user, order[0].user_id);
         if (!permission.granted) {
             ctx.status = 403;
+            ctx.body = { error: 'Forbidden' };
             return;
         }
-
-        if (order.length) {
-            ctx.body = order[0];
-            ctx.status = 200;
-        } else {
-            ctx.status = 404;
-            ctx.body = { error: 'Order not found' };
-        }
+        ctx.body = order[0];
+        ctx.status = 200;
     } catch (error) {
         console.error(error);
         ctx.status = 500;
@@ -175,6 +178,7 @@ async function updateOrder(ctx) {
         const permission = can.update(user);
         if (!permission.granted) {
             ctx.status = 403;
+            ctx.body = { error: 'Forbidden' };
             return;
         }
 
@@ -208,6 +212,7 @@ async function deleteOrder(ctx) {
         const permission = can.delete(user);
         if (!permission.granted) {
             ctx.status = 403;
+            ctx.body = { error: 'Forbidden' };
             return;
         }
 

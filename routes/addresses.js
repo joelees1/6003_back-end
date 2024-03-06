@@ -49,7 +49,7 @@ async function getAllAddresses(ctx) {
         }
 
         const [addresses] = await model.getAll(id); // get addresses belonging to the user
-        
+
         // If addresses are found, return them
         if (addresses.length) {
             ctx.body = addresses[0];
@@ -81,7 +81,7 @@ async function getAddressById(ctx) {
             return;
         }
         
-        let addressId = ctx.params.addressId;
+        let addressId = ctx.params.addressId; // address id from the url
         let [address] = await model.getById(addressId, id);
 
         // If an address is found, return it

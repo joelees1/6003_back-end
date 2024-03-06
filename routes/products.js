@@ -40,11 +40,11 @@ const router = Router({prefix: prefix});
 
 
 router.get('/', getAllProducts); // no auth
-router.post('/', koaBody, auth, validateProduct, createProduct); // auth
+router.post('/', koaBody, auth, validateProduct, createProduct);
 router.get('/:productId([0-9]{1,})', getProductById); // no auth
 router.get('/:productId([0-9]{1,})/image', getProductImageById); // no auth
-router.put('/:productId([0-9]{1,})', auth, bodyParser(), validateProductUpdate, updateProduct); // auth
-router.del('/:productId([0-9]{1,})', auth, deleteProduct); // auth
+router.put('/:productId([0-9]{1,})', auth, bodyParser(), validateProductUpdate, updateProduct);
+router.del('/:productId([0-9]{1,})', auth, deleteProduct);
 
 
 /** get all products
@@ -64,7 +64,6 @@ async function getAllProducts(ctx) {
             // extract only the product fields needed for the home page
             const body = products.map(product => {
                 const { id, name, description, creator, sold, category_id } = product;
-                //const links = { self: `/products/${id}`, image: `/products/${id}/image` };
                 const links = { 
                     self: `${ctx.protocol}://${ctx.host}${prefix}/${id}`,
                     image: `${ctx.protocol}://${ctx.host}${prefix}/${id}/image`
@@ -144,7 +143,7 @@ async function getProductImageById(ctx) {
  */
 async function createProduct(ctx) {
     try {
-        //let user = ctx.state.user; // current user
+        let user = ctx.state.user; // current user
         const permission = can.create(user);
         if (!permission.granted) {
             ctx.status = 403; // Forbidden
@@ -193,11 +192,9 @@ async function createProduct(ctx) {
 async function updateProduct(ctx) {
     try {
         let user = ctx.state.user; // current user
-        console.log(user);
         const productId = ctx.params.productId;
 
         const permission = can.update(user);
-        console.log(permission);
         if (!permission.granted) {
             ctx.status = 403; // Forbidden
             ctx.body = { error: 'Permission denied' };
@@ -233,6 +230,7 @@ async function deleteProduct(ctx) {
         const permission = can.delete(user);
         if (!permission.granted) {
             ctx.status = 403; // Forbidden
+            ctx.body = { error: 'Permission denied' };
             return;
         }
 

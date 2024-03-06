@@ -38,8 +38,7 @@ router.del('/:categoryId([0-9]{1,})', auth, deleteCategory);
 */
 async function getAllCategories(ctx) {
     try {
-        let user = ctx.state.user; // current user
-
+        //let user = ctx.state.user; // current user
         /*const permission = can.read(user);
         if (!permission.granted) {
             ctx.status = 403;
@@ -75,6 +74,7 @@ async function getCategoryById(ctx) {
         const permission = can.read(user);
         if (!permission.granted) {
             ctx.status = 403;
+            ctx.body = { error: 'Permission denied' };
             return;
         }
 
