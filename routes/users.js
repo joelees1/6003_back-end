@@ -133,9 +133,6 @@ async function createUser(ctx) {
         }
     } 
     catch (error) {
-        console.error(error.code);
-        console.error(error);
-
         if (error.code === 'ER_DUP_ENTRY') {
             ctx.status = 400; // duplicate entry
             ctx.body = { error: 'Username or Email already exists' };
@@ -143,6 +140,8 @@ async function createUser(ctx) {
             ctx.status = 500;
             ctx.body = { error: 'Failed to create the user' };
         }
+        console.error(error.code);
+        console.error(error);
     }
 }
 
