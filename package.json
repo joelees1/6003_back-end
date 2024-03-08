@@ -6,9 +6,9 @@
   "scripts": {
     "test": "cross-env DB_DATABASE=6003_CW_tests jest --testTimeout=10000 --detectOpenHandles",
     "test:watch": "cross-env DB_DATABASE=6003_CW_tests jest --watch",
-    "6003_CW_tests:drop": "mysql --user=root --password=Musicrox79* -e 'DROP DATABASE 6003_CW_tests;'",
-    "6003_CW_tests:create": "mysql --user=root --password=Musicrox79* -e 'CREATE DATABASE 6003_CW_tests;'",
-    "6003_CW_tests:migrate": "mysqldump --user=root --password=Musicrox79* 6003_CW | mysql --user=root --password=Musicrox79* 6003_CW_tests",
+    "6003_CW_tests:drop": "mysql --user=root --password=codio -e 'DROP DATABASE 6003_CW_tests;'",
+    "6003_CW_tests:create": "mysql --user=root --password=codio -e 'CREATE DATABASE 6003_CW_tests;'",
+    "6003_CW_tests:migrate": "mysqldump --user=root --password=codio 6003_CW | mysql --user=root --password=codio 6003_CW_tests",
     "pretest": "npm run 6003_CW_tests:drop && npm run 6003_CW_tests:create && npm run 6003_CW_tests:migrate"
   },
   "repository": {

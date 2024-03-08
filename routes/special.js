@@ -69,7 +69,7 @@ async function login(ctx) {
 
 		// Check if user exists and password is correct
 		if (!user || user.length === 0 || !(await verifyPassword(user, details.password))) {
-			ctx.status = 401; // Unauthorized
+			ctx.status = 401; // Unauthorised
 			ctx.body = { error: 'Invalid username or password' };
 			return;
 		}
