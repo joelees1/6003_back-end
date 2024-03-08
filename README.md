@@ -2,21 +2,29 @@
 
 ## Project Overview
 
-This repository contains the backend API for an online art e-commerce website. It provides RESTful endpoints to facilitate user registration, order placement, address management, and product browsing functionalities. Users are able to browse art on the site and make an account to order pieces they like. 
+This repository contains the backend API for an online art e-commerce website. It provides RESTful endpoints to facilitate user registration, order placement, address management, and product browsing functionalities. Users are able to browse art on the site and make an account to order pieces they like.
+
+## Setup
+- install npm packages with 'npm install' which will get all dependencies from package.json files
+- create 6003_CW and 6003_CW_tests databases, use sql generation scripts to create tables and data in 6003_CW (copied automatically into test db)
+- run 'nodemon .' to run index file
+
+## Testing:
+To run automated tests run 'npm start', might have to edit some resource id's to get all to pass as they might be dependent on certain id's existing.
 
 ## Key Features
 
 * **User Authentication:** Secure user registration and login system using json web tokens.
 * **Product Management:**  Endpoints for viewing and filtering art products.
 * **Order Processing:**  Handles making orders, and order status tracking.
-* **User & Address Management:** Enables users to register and manage an account as well as a shipping address.
-* **Admin methods** gives easy to use ui for consumtion of admin resources like editing and deleting users, products, categories and orders
+* **User & Address Management:** Enables users to register and manage an account and shipping address.
+* **Admin methods** gives clear UI for consumption of admin resources like editing and deleting users, products, categories and orders
 * **Comprehensive OpenAPI and jsdoc documentation**
 
 ## Technology Stack
 
 * **Node.js:** Server-side JavaScript runtime environment.
-* **KOA:**  Web framework  for API endpoint creation.
+* **KOA:** API framework.
 * **MySql:** Database.
 
 ## Documentation
