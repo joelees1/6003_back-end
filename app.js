@@ -33,10 +33,3 @@ app.use(categories.routes());
 app.use(orders.routes());
 
 module.exports = app;
-
-
-/** Starts the Koa server on a specified port.
- * @function startServer
- * @memberof index
- * @param {number} [port=3000] - The port to listen on.
- */
