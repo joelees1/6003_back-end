@@ -12,6 +12,12 @@ This repository contains the backend API for an online art e-commerce website. I
 ## Testing:
 To run automated tests run 'npm start', might have to edit some resource id's to get all to pass as they might be dependent on certain id's existing.
 
+admin user:
+username = admin, password = password
+
+regular user:
+username = user, password = password (or register for a new account)
+
 ## Key Features
 
 * **User Authentication:** Secure user registration and login system using json web tokens.
